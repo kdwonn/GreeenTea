@@ -36,4 +36,14 @@ public class UiTest {
 	    dialog = bot.shell("Open Associated Perspective?");
 	    bot.button("No").click();
 	}
+	@Test
+	public void pulginStart() {
+		bot.menu("Window").menu("Show View").menu("Other...").click();
+		SWTBotShell dialog = bot.shell("Show View");
+	    dialog.activate();
+	    bot.tree().expandNode("CSED332").select("Package Overview");
+	    bot.button("Open").click();
+	    
+	    assertEquals("Demo", bot.viewByTitle("GreenTea").bot().tree().getTreeItem("Demo").getText());
+	}
 }
