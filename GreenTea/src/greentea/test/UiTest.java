@@ -19,5 +19,21 @@ import org.junit.runner.RunWith;
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class UiTest {
 	private static SWTWorkbenchBot bot;
-	
+	@BeforeClass
+	public static void initBot() {
+		// TODO
+		bot = new SWTWorkbenchBot();
+		bot.menu("File").menu("New").menu("Project...").click();
+		
+		SWTBotShell dialog = bot.shell("New Project");
+	    dialog.activate();
+	    
+	    bot.tree().expandNode("Java").select("Java Project");
+	    bot.button("Next >").click();
+	    bot.textWithLabel("Project name:").setText("Demo");
+	    bot.button("Finish").click();
+	    
+	    dialog = bot.shell("Open Associated Perspective?");
+	    bot.button("No").click();
+	}
 }
