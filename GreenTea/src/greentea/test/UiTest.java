@@ -21,7 +21,7 @@ public class UiTest {
 	private static SWTWorkbenchBot bot;
 	@BeforeClass
 	public static void initBot() {
-		// TODO
+		// init swtbot
 		bot = new SWTWorkbenchBot();
 		bot.menu("File").menu("New").menu("Project...").click();
 		
@@ -38,6 +38,7 @@ public class UiTest {
 	}
 	@Test
 	public void testPulginStart() {
+		// Start plugin and check ecisting project appears in tree view
 		bot.menu("Window").menu("Show View").menu("Other...").click();
 		SWTBotShell dialog = bot.shell("Show View");
 	    dialog.activate();
@@ -48,6 +49,7 @@ public class UiTest {
 	}
 	@Test
 	public void testAddPackageClass() {
+		// Add new package and class in workspace and check tree view is updated
 		bot.menu("File").menu("New").menu("Package").click();
 	    SWTBotShell dialog = bot.shell("New java Package");
 	    dialog.activate();
