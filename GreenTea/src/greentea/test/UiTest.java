@@ -37,7 +37,7 @@ public class UiTest {
 	    bot.button("No").click();
 	}
 	@Test
-	public void pulginStart() {
+	public void testPulginStart() {
 		bot.menu("Window").menu("Show View").menu("Other...").click();
 		SWTBotShell dialog = bot.shell("Show View");
 	    dialog.activate();
@@ -47,7 +47,7 @@ public class UiTest {
 	    assertEquals("Demo", bot.viewByTitle("GreenTea").bot().tree().getTreeItem("Demo").getText());
 	}
 	@Test
-	public void testExpandCollapse() {
+	public void testAddPackageClass() {
 		bot.menu("File").menu("New").menu("Package").click();
 	    SWTBotShell dialog = bot.shell("New java Package");
 	    dialog.activate();
