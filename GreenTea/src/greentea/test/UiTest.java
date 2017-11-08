@@ -46,4 +46,24 @@ public class UiTest {
 	    
 	    assertEquals("Demo", bot.viewByTitle("GreenTea").bot().tree().getTreeItem("Demo").getText());
 	}
+	@Test
+	public void testExpandCollapse() {
+		bot.menu("File").menu("New").menu("Package").click();
+	    SWTBotShell dialog = bot.shell("New java Package");
+	    dialog.activate();
+	    bot.textWithLabel("Source folder:").setText("Demo/src");
+	    bot.textWithLabel("Name:").setText("demoPackage");
+	    bot.button("Finish").click();
+	    
+	    bot.menu("File").menu("New").menu("File").click();
+	    dialog = bot.shell("New File");
+	    dialog.activate();
+	    bot.textWithLabel("Enter or select the parent folder:").setText("Demo/src/demoPackage");
+	    bot.textWithLabel("File name:").setText("simple.java");
+	    bot.button("Finish").click();
+	    
+	    
+		assertEquals("demoPackage", bot.tree().getTreeItem("homework5").getText());
+		assertEquals("simple.java", bot.tree().getTreeItem("simple.java").getText());
+	}
 }
