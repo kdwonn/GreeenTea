@@ -1,4 +1,4 @@
-package greentea.parts;
+package greentea;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
