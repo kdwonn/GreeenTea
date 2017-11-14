@@ -18,6 +18,7 @@ import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 class ProjectAnalyser {
 	public String[] getProjectNames() {
 		IJavaProject[] projects = getProjects();
+		if(projects == null) return null;
 		List<String> nameList = new LinkedList<String>();
 		for(IJavaProject prj : projects) {
 			nameList.add(prj.getElementName());
@@ -27,6 +28,7 @@ class ProjectAnalyser {
 	
 	public String[] getPackageNames(String projectName) {
 		IPackageFragment[] packages = getPackages(projectName);
+		if(packages == null) return null;
 		List<String> nameList = new LinkedList<String>();
 		for(IPackageFragment pack : packages) {
 			nameList.add(pack.getElementName());
@@ -36,6 +38,7 @@ class ProjectAnalyser {
 	
 	public String[] getClassNames(String projectName, String packageName) {
 		ICompilationUnit[] classes = getCompilationUnits(projectName, packageName);
+		if(classes == null) return null;
 		List<String> nameList = new LinkedList<String>();
 		for(ICompilationUnit pack : classes) {
 			nameList.add(pack.getElementName());
@@ -43,9 +46,15 @@ class ProjectAnalyser {
 		return nameList.toArray(new String[] {});
 	}
 	
-	public String getSouceCode(String projectName, String packageName, String ClassName) {
-		//TODO
-		return null;
+	public String getSourceCode(String projectName, String packageName, String ClassName) {
+		ICompilationUnit compilationUnit = getCompilationUnit(projectName, packageName, ClassName);
+		if(compilationUnit == null) return null;
+		try {
+			return compilationUnit.getSource();
+		} catch (JavaModelException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	private IJavaProject[] getProjects() {
@@ -88,7 +97,6 @@ class ProjectAnalyser {
 			}
 			return fragmentList.toArray(new IPackageFragment[] {});
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -102,10 +110,19 @@ class ProjectAnalyser {
 				try {
 					return pack.getCompilationUnits();
 				} catch (JavaModelException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 					return null;
 				}
+			}
+		}
+		return null;
+	}
+	
+	private ICompilationUnit getCompilationUnit(String projectName, String packageName, String ClassName) {
+		ICompilationUnit[] classes = getCompilationUnits(projectName, packageName);
+		for(ICompilationUnit compilationUnit : classes) {
+			if(compilationUnit.getElementName().equals(ClassName)) {
+				return compilationUnit;
 			}
 		}
 		return null;
