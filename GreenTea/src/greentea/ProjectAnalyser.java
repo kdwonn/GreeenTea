@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 
 class ProjectAnalyser {
@@ -34,8 +35,12 @@ class ProjectAnalyser {
 	}
 	
 	public String[] getClassNames(String projectName, String packageName) {
-		//TODO
-		return null;
+		ICompilationUnit[] classes = getCompilationUnits(projectName, packageName);
+		List<String> nameList = new LinkedList<String>();
+		for(ICompilationUnit pack : classes) {
+			nameList.add(pack.getElementName());
+		}
+		return nameList.toArray(new String[] {});
 	}
 	
 	public String getSouceCode(String projectName, String packageName, String ClassName) {
@@ -88,6 +93,22 @@ class ProjectAnalyser {
 			return null;
 		}
 		
+	}
+	
+	private ICompilationUnit[] getCompilationUnits(String projectName, String packageName) {
+		IPackageFragment[] packages = getPackages(projectName);
+		for(IPackageFragment pack : packages) {
+			if(pack.getElementName().equals(packageName)) {
+				try {
+					return pack.getCompilationUnits();
+				} catch (JavaModelException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return null;
+				}
+			}
+		}
+		return null;
 	}
 	
 }
