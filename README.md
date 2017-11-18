@@ -113,7 +113,7 @@ T_S18
   - `Enable filter options so that if will be possible to view only the wanted objects through filtering.`
 
 T_S19
-  - Title: `State-indicating Icons
+  - Title: `State-indicating Icons`
   - Priority : `3`
   - Units (Story Points): `3`
   - `The plugin does show the actual values of metrics, but the values themselves does not actually indicate how efficient the code is. Therefore, depending on whether each value of metric indicates a good/moderate/bad condition, it would be nice to have different icons representing the state of the metric values to enable the determination of the code's efficiency.`
