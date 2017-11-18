@@ -52,7 +52,7 @@ T_S08
   - `Calculate the Abstractness of the module. This can be calculated by the number of abstract classes in the module divided by the total number of classes in the module.`
 
 T_S09
-  - Title: `Display Green tea UI
+  - Title: `Display Green tea UI`
   - Priority: 2
   - Units (Story Points): 5
   - `When cliking on views -> Others -> GreenTea, the UI window for the GreenTea can be accessed`
