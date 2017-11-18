@@ -22,6 +22,14 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 public class Metric {
 	static public int measureCyclomatic
 	(String projectName, String packageName, String className, String methodName) {
+		class cyclomaticVisitor extends ASTVisitor{
+			int cyMetric = 1;
+			String code = null;
+			public cyclomaticVisitor(String code) {
+				// TODO Auto-generated constructor stub
+				this.code = code;
+			}
+		};
 		return 0;
 	}
 	static public double measureDhama
