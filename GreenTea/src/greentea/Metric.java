@@ -53,6 +53,8 @@ public class Metric {
 		};
 		
 		cyclomaticVisitor treeVisitor;
+		MethodDeclaration methodRepresent;
+		MethodVisitor methodVisitor = new MethodVisitor();
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		String classSource_ = ProjectAnalyser.getSourceCode(projectName, packageName, className);
 		char[] classSource = classSource_.toCharArray();
@@ -62,6 +64,14 @@ public class Metric {
 		parser.setResolveBindings(true);
 		
 		CompilationUnit classRepresent = (CompilationUnit)parser.createAST(null);
+		classRepresent.accept(methodVisitor);
+		
+		for(MethodDeclaration temp : methodVisitor.getMethods()) {
+			if(methodName.equals(temp.getName().toString())) {
+				methodRepresent = temp;
+				break;
+			}
+		}
 		
 		
 		return 0;
