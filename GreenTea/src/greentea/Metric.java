@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
@@ -38,22 +39,29 @@ public class Metric {
 			}
 		};
 		class MethodVisitor extends ASTVisitor {
-		    List<MethodDeclaration> methods = new ArrayList<MethodDeclaration>();
+		    List<MethodDeclaration> methodList = new ArrayList<MethodDeclaration>();
 
 		    @Override
 		    public boolean visit(MethodDeclaration node) {
-		        methods.add(node);
+		        methodList.add(node);
 		        return super.visit(node);
 		    }
 
 		    public List<MethodDeclaration> getMethods() {
-		        return methods;
+		        return methodList;
 		    }
 		};
 		
 		cyclomaticVisitor treeVisitor;
-		ASTParser parser = ASTParser.newParser(AST.JLS8);
-		ICompilationUnit IClassRepresent = ProjectAnalyser.getCompilationUnit(projectName, packageName, className);
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		String classSource_ = ProjectAnalyser.getSourceCode(projectName, packageName, className);
+		char[] classSource = classSource_.toCharArray();
+		
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setSource(classSource);
+		parser.setResolveBindings(true);
+		
+		CompilationUnit classRepresent = (CompilationUnit)parser.createAST(null);
 		
 		
 		return 0;

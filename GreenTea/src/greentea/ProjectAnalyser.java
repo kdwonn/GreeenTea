@@ -57,7 +57,7 @@ class ProjectAnalyser {
 		}
 	}
 	
-	public static IJavaProject[] getProjects() {
+	private static IJavaProject[] getProjects() {
 		IProject[] projects =  ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		List<IJavaProject> projectList = new LinkedList<IJavaProject>();
 		for(IProject prj : projects) {
@@ -69,7 +69,7 @@ class ProjectAnalyser {
 		return projectList.toArray(new IJavaProject[] {});
 	}
 	
-	public static IPackageFragment[] getPackages(String projectName) {
+	private static IPackageFragment[] getPackages(String projectName) {
 		IJavaProject[] projects = getProjects();
 		IJavaProject objectProject = null;
 		for(IJavaProject prj : projects) {
@@ -103,7 +103,7 @@ class ProjectAnalyser {
 		
 	}
 	
-	public static ICompilationUnit[] getCompilationUnits(String projectName, String packageName) {
+	private static ICompilationUnit[] getCompilationUnits(String projectName, String packageName) {
 		IPackageFragment[] packages = getPackages(projectName);
 		for(IPackageFragment pack : packages) {
 			if(pack.getElementName().equals(packageName)) {
@@ -118,7 +118,7 @@ class ProjectAnalyser {
 		return null;
 	}
 	
-	public static ICompilationUnit getCompilationUnit(String projectName, String packageName, String ClassName) {
+	private static ICompilationUnit getCompilationUnit(String projectName, String packageName, String ClassName) {
 		ICompilationUnit[] classes = getCompilationUnits(projectName, packageName);
 		for(ICompilationUnit compilationUnit : classes) {
 			if(compilationUnit.getElementName().equals(ClassName)) {
