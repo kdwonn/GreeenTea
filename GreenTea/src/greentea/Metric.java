@@ -36,6 +36,15 @@ public class Metric {
 			public cyclomaticVisitor(String x) {
 				// TODO Auto-generated constructor stub
 				code = x;
+				findConditionOperator();
+			}
+			public void findConditionOperator() {
+				char[] charCode = code.toCharArray();
+				for(int i = 0; i < code.length(); i ++) {
+					if(charCode[i] == '&' || charCode[i] == '|') {
+						if (charCode[i + 1] == charCode [i]) cyMetric ++;
+					}
+				}
 			}
 		};
 		class MethodVisitor extends ASTVisitor {
