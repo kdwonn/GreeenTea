@@ -15,7 +15,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 
-class ProjectAnalyser {
+public class ProjectAnalyser {
 	/**
 	 * return names of project in workspace
 	 * @return String[]   
