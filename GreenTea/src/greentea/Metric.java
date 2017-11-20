@@ -37,6 +37,23 @@ public class Metric {
 				// TODO Auto-generated constructor stub
 				code = x;
 			}
+			//Block that cyclomatic dosent have to care about : because cyclomatic is calculated at method level
+			@Override
+			public boolean visit(AnonymousClassDeclaration node) {
+				return false; 
+			}
+			@Override
+			public boolean visit(TypeDeclaration node) {
+				return false;
+			}
+			@Override
+			public boolean visit(AnnotationTypeDeclaration node) {
+				return false;
+			}
+			@Override
+			public boolean visit(EnumDeclaration node) {
+				return false;
+			}
 			public void findConditionOperator(Expression codeBody) {
 				int startIdx = codeBody.getStartPosition();
 				char[] charCode = code.substring(startIdx, startIdx + codeBody.getLength()).toCharArray();
