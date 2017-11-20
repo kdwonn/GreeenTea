@@ -35,4 +35,68 @@ public class Metric {
 				- 16.2 * Math.log(Metric.measureLOC(method))
 				) * 100 / 171 );
 	}
+	
+	static public int measureDhama() {
+		// to T_S04
+		return 0;
+	}
+	
+	static public int measureMartin(String proj, String pckg) {
+		// Todo
+		return 0;
+	}
+}
+
+class MartinCoupling {
+	private int afferentCoupling;
+	private int efferentCoupling;
+	List<String> innerClassesName;
+	List<String> outerClassesName;
+	
+	public MartinCoupling(String proj, String pckg) {
+		List<String> projects = Arrays.asList(ProjectAnalyser.getProjectNames());
+		
+		if(!projects.contains(proj)) {
+			//exception
+		}
+		
+		List<String> packages = Arrays.asList(ProjectAnalyser.getPackageNames(proj));
+		
+		if(!packages.contains(pckg)) {
+			//exception
+		}
+		
+		innerClassesName = Arrays.asList(ProjectAnalyser.getClassNames(proj, pckg));
+		outerClassesName = new ArrayList<String>();
+		for(String packs : packages) {
+			if(!packs.equals(pckg)) {
+				outerClassesName.addAll(Arrays.asList(ProjectAnalyser.getClassNames(proj, packs)));
+			}
+		}
+		
+	}
+	
+	private int AfferentCoupling(String proj, String pckg) {
+		int result = 0;
+		// Todo		
+		return 0;
+	}
+	
+	private String removeComment(String src) {
+		int idxMultiLineComment = src.trim().indexOf("/*");
+	    int idxSingleLineComment = src.trim().indexOf("//");
+	    String result = src;
+	    
+	    while ((idxMultiLineComment == 0) || (idxSingleLineComment == 0)) {
+	    	if (idxMultiLineComment == 0) {
+	    		result = src.substring(src.indexOf("*/") + 2);
+	    	} else {
+	    	  	result = src.substring(src.indexOf('\n') + 1);
+	    	} 
+	    	
+	    	idxMultiLineComment = src.trim().indexOf("/*");
+	    	idxSingleLineComment = src.trim().indexOf("//");
+	    }
+	    return result;
+	}
 }
