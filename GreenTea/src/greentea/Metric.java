@@ -91,6 +91,12 @@ public class Metric {
 				findConditionOperator(node.getExpression()); // if(expression) {} else {}
 				return true;
 			}
+			@Override
+			public boolean visit(EnhancedForStatement node) {
+				cyMetric++;
+				findConditionOperator(node.getExpression()); // for( _ : expression)
+				return true;
+			}
 			public void findConditionOperator(Expression codeBody) {
 				int startIdx = codeBody.getStartPosition();
 				char[] charCode = code.substring(startIdx, startIdx + codeBody.getLength()).toCharArray();
