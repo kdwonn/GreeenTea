@@ -72,7 +72,13 @@ public class Metric {
 				cyMetric++; // catch(exception){}
 				return true;
 			}
-			
+			@Override
+			public boolean visit(SwitchCase node) {
+				if (!node.isDefault()) {
+					cyMetric++; // increase cyMetric except default case
+				}
+				return true;
+			}
 			public void findConditionOperator(Expression codeBody) {
 				int startIdx = codeBody.getStartPosition();
 				char[] charCode = code.substring(startIdx, startIdx + codeBody.getLength()).toCharArray();
