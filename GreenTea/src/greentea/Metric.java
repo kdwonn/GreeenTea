@@ -61,6 +61,12 @@ public class Metric {
 				findConditionOperator(node.getExpression());
 				return true;
 			}
+			@Override
+			public boolean visit(DoStatement node) {
+				cyMetric++;
+				findConditionOperator(node.getExpression());
+				return true;
+			}
 			
 			public void findConditionOperator(Expression codeBody) {
 				int startIdx = codeBody.getStartPosition();
