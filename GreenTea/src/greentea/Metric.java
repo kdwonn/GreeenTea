@@ -54,6 +54,14 @@ public class Metric {
 			public boolean visit(EnumDeclaration node) {
 				return false;
 			}
+			//Block that could create new branch or contains &&, ||
+			@Override
+			public boolean visit(ConditionalExpression node) {
+				cyMetric++;
+				findConditionOperator(node.getExpression());
+				return true;
+			}
+			
 			public void findConditionOperator(Expression codeBody) {
 				int startIdx = codeBody.getStartPosition();
 				char[] charCode = code.substring(startIdx, startIdx + codeBody.getLength()).toCharArray();
