@@ -58,13 +58,18 @@ public class Metric {
 			@Override
 			public boolean visit(ConditionalExpression node) {
 				cyMetric++;
-				findConditionOperator(node.getExpression());
+				findConditionOperator(node.getExpression()); // if(expression){}
 				return true;
 			}
 			@Override
 			public boolean visit(DoStatement node) {
 				cyMetric++;
-				findConditionOperator(node.getExpression());
+				findConditionOperator(node.getExpression()); // do{}while(expression)
+				return true;
+			}
+			@Override
+			public boolean visit(CatchClause node) {
+				cyMetric++; // catch(exception){}
 				return true;
 			}
 			
