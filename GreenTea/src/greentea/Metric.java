@@ -78,8 +78,25 @@ class MartinCoupling {
 	
 	private int AfferentCoupling(String proj, String pckg) {
 		int result = 0;
-		// Todo		
-		return 0;
+		
+		List<String> packages = Arrays.asList(ProjectAnalyser.getPackageNames(proj));
+		
+		for(String packs : packages) {
+			List<String> outerClasses = Arrays.asList(ProjectAnalyser.getClassNames(proj, packs));
+			if(!packs.equals(pckg)) {
+				for(String outer : outerClasses) {
+					String outersrc = removeComment(ProjectAnalyser.getSourceCode(proj, packs, outer));
+					for(String inner : innerClassesName) {
+						if(outersrc.matches("[^]*[^a-zA-Z0-9]"+inner+"[^a-zA-Z0-9][^]*")) {
+							result++;
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		return result;
 	}
 	
 	private String removeComment(String src) {
@@ -98,5 +115,20 @@ class MartinCoupling {
 	    	idxSingleLineComment = src.trim().indexOf("//");
 	    }
 	    return result;
+	}
+	
+	public int getCa() {
+		return afferentCoupling;
+	}
+	
+	public int getCe() {
+		return efferentCoupling;
+	}
+	
+	public int getResult() {
+		if(afferentCoupling + efferentCoupling == 0) {
+			return 0;
+		}
+		return efferentCoupling / (afferentCoupling + efferentCoupling);
 	}
 }
