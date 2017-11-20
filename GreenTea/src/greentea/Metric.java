@@ -97,6 +97,11 @@ public class Metric {
 				findConditionOperator(node.getExpression()); // for( _ : expression)
 				return true;
 			}
+			@Override
+			public boolean visit(VariableDeclarationFragment node) {
+				findConditionOperator(node.getInitializer()); // {type} {varname} = initializer;
+				return true;
+			}
 			public void findConditionOperator(Expression codeBody) {
 				int startIdx = codeBody.getStartPosition();
 				char[] charCode = code.substring(startIdx, startIdx + codeBody.getLength()).toCharArray();
