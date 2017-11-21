@@ -42,8 +42,8 @@ public class Metric {
 	}
 	
 	static public int measureMartin(String proj, String pckg) {
-		// Todo
-		return 0;
+		MartinCoupling mc = new MartinCoupling(proj, pckg);
+		return mc.getResult();
 	}
 }
 
@@ -73,10 +73,11 @@ class MartinCoupling {
 				outerClassesName.addAll(Arrays.asList(ProjectAnalyser.getClassNames(proj, packs)));
 			}
 		}
-		
+		afferentCoupling = CalcAfferentCoupling(proj, pckg);
+		efferentCoupling = CalcEfferentCoupling(proj, pckg);
 	}
 	
-	private int AfferentCoupling(String proj, String pckg) {
+	private int CalcAfferentCoupling(String proj, String pckg) {
 		int result = 0;
 		
 		List<String> packages = Arrays.asList(ProjectAnalyser.getPackageNames(proj));
@@ -89,13 +90,27 @@ class MartinCoupling {
 					for(String inner : innerClassesName) {
 						if(outersrc.matches("[^]*[^a-zA-Z0-9]"+inner+"[^a-zA-Z0-9][^]*")) {
 							result++;
-							break;
+							break; 
 						}
 					}
 				}
 			}
 		}
+		return result;
+	}
+	
+	private int CalcEfferentCoupling(String proj, String pckg) {
+		int result = 0;
 		
+		for(String inner : innerClassesName) {
+			String innersrc = removeComment(ProjectAnalyser.getSourceCode(proj, pckg, inner));
+			for(String outer : outerClassesName) {
+				if(innersrc.matches("[^]*[^a-zA-Z0-9]"+outer+"[^a-zA-Z0-9][^]*")) {
+					result++;
+					break; 
+				}
+			}
+		}
 		return result;
 	}
 	
