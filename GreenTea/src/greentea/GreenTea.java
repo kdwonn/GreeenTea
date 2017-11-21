@@ -1,12 +1,19 @@
 package greentea;
 
 import java.io.File;
+import java.net.URL;
+
 import javax.annotation.PostConstruct;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -20,14 +27,11 @@ public class GreenTea {
 	private org.eclipse.jface.viewers.TreeViewer treeViewer;
 
 	/*
-	 * composite parent -> sepatate to some area and only left area used for treeviewrcol.
+	 * composite parent -> separate to some area and only left area used for treeviewrcol.
+	 * 	Will be moved to treeViewer
 	 */
 	@PostConstruct
-	public void createPartControl(Composite parent) {
-	    //Composite container = new Composite(parent, SWT.NONE);
-	    //GridLayout gl_container = new GridLayout(2, false);
-	    //container.setLayout(gl_container);
-	    
+	public void createPartControl(Composite parent) {	    
 	    treeViewer = new org.eclipse.jface.viewers.TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FILL);
         treeViewer.setContentProvider(new ViewContentProvider());
         treeViewer.getTree().setHeaderVisible(true);
@@ -63,7 +67,6 @@ public class GreenTea {
         
 	}
 	
-	//Will be moved to treeViewer
     class ViewContentProvider implements ITreeContentProvider {
         public void inputChanged(Viewer v, Object oldInput, Object newInput) {
         }
@@ -76,11 +79,11 @@ public class GreenTea {
         public Object[] getElements(Object inputElement) {
         	if(inputElement instanceof String[]) {
         		String projectNames[] = (String[])inputElement;
-        		List<Path> list = new ArrayList<Path>();
+        		List<GTPath> list = new ArrayList<GTPath>();
         		for(String projectName : projectNames) {
-        			list.add(new Path(projectName));
+        			list.add(new GTPath(projectName));
         		}
-        		return list.toArray(new Path[0]);
+        		return list.toArray(new GTPath[0]);
         	}
         	else {
         		return null;
@@ -89,32 +92,32 @@ public class GreenTea {
 
         @Override
         public Object[] getChildren(Object parentElement) {
-        	if(parentElement instanceof Path) {
-        		Path path = (Path)parentElement;
-        		List<Path> list = new ArrayList<Path>();
-        		if(path.getType() == Path.PROJECT) {
+        	if(parentElement instanceof GTPath) {
+        		GTPath path = (GTPath)parentElement;
+        		List<GTPath> list = new ArrayList<GTPath>();
+        		if(path.getType() == GTPath.PROJECT) {
         			String projectName = path.getProjectName();
         			for(String packageName : ProjectAnalyser.getPackageNames(projectName)) {
-        				list.add(new Path(path, packageName));
+        				list.add(new GTPath(path, packageName));
         			}
-        			return list.toArray(new Path[0]);
+        			return list.toArray(new GTPath[0]);
         		}
-        		else if (path.getType() == Path.PACKAGE) {
+        		else if (path.getType() == GTPath.PACKAGE) {
         			String projectName = path.getProjectName();
         			String packageName = path.getPackageName();
         			for(String className : ProjectAnalyser.getClassNames(projectName, packageName)) {
-        				list.add(new Path(path, className));
+        				list.add(new GTPath(path, className));
         			}
-        			return list.toArray(new Path[0]);
+        			return list.toArray(new GTPath[0]);
         		}
-        		else if (path.getType() == Path.CLASS) {
+        		else if (path.getType() == GTPath.CLASS) {
         			String projectName = path.getProjectName();
         			String packageName = path.getPackageName();
         			String className = path.getClassName();
         			for(String methodName : ProjectAnalyser.getMethodNames(projectName, packageName, className)) {
-        				list.add(new Path(path, methodName));
+        				list.add(new GTPath(path, methodName));
         			}
-        			return list.toArray(new Path[0]);
+        			return list.toArray(new GTPath[0]);
         		}
         	}
         	return null;
@@ -122,22 +125,29 @@ public class GreenTea {
 
         @Override
         public Object getParent(Object element) {
-        	if (element instanceof Path) {
-        		return ((Path) element).getParent();
+        	if (element instanceof GTPath) {
+        		return ((GTPath) element).getParent();
         	}
         	return null;
         }
 
         @Override
         public boolean hasChildren(Object element) {
-        	if (element instanceof Path) {
-        		Path path = (Path)element;
-        		if(path.getType() < 1 || path.getType() > 3) {
+        	if (element instanceof GTPath) {
+        		GTPath path = (GTPath)element;
+        		if(path.getType() == GTPath.PROJECT) {
+        			if(ProjectAnalyser.getPackageNames(path.getProjectName()).length > 0) return true;
         			return false;
         		}
-        		else {
-        			return true;
+        		else if (path.getType() == GTPath.PACKAGE) {
+        			if(ProjectAnalyser.getClassNames(path.getProjectName(), path.getPackageName()).length > 0)return true;
+        			return false;
         		}
+        		else if (path.getType() == GTPath.CLASS) {
+        			if(ProjectAnalyser.getMethodNames(path.getProjectName(), path.getPackageName(), path.getClassName()).length > 0)return true;
+        			return false;
+        		}
+        		return false;
         	}
         	return false;
         }
@@ -150,14 +160,15 @@ public class GreenTea {
         private ResourceManager resourceManager;
 
         public ViewLabelProvider() {
+
         }
 
         @Override
         public StyledString getStyledText(Object element) {
         	String name = "";
         	
-        	if(element instanceof Path) {
-        		Path path = (Path)element;
+        	if(element instanceof GTPath) {
+        		GTPath path = (GTPath)element;
         		name = path.toString();
         	}
         	
@@ -167,7 +178,7 @@ public class GreenTea {
 
         @Override
         public Image getImage(Object element) {
-            return null;
+        	return null;
         }
 
         @Override
@@ -201,7 +212,7 @@ public class GreenTea {
 		
 		@Override
         public StyledString getStyledText(Object element) {
-			if(element instanceof Path) {
+			if(element instanceof GTPath) {
 				return new StyledString(String.valueOf(index));
 			}
             return null;
@@ -209,13 +220,7 @@ public class GreenTea {
 
 		@Override
         public Image getImage(Object element) {
-            if (element instanceof File) {
-                if (((File) element).isDirectory()) {
-                    return getResourceManager().createImage(directoryImage);
-                }
-            }
-
-            return super.getImage(element);
+            return null;
         }
 
         @Override
@@ -236,7 +241,7 @@ public class GreenTea {
 	}
 	
 	
-	class Path {
+	class GTPath {
 		static final int PROJECT = 1;
 		static final int PACKAGE = 2;
 		static final int CLASS = 3;
@@ -249,25 +254,25 @@ public class GreenTea {
 		private String className;
 		private String methodName;
 		
-		public Path(String projectName) {
+		public GTPath(String projectName) {
 			type = PROJECT;
 			this.projectName = projectName;
 		}
 		
-		public Path(String projectName, String packageName) {
+		public GTPath(String projectName, String packageName) {
 			type = PACKAGE;
 			this.projectName = projectName;
 			this.packageName = packageName;
 		}
 		
-		public Path(String projectName, String packageName, String className) {
+		public GTPath(String projectName, String packageName, String className) {
 			type = CLASS;
 			this.projectName = projectName;
 			this.packageName = packageName;
 			this.className = className;
 		}
 		
-		public Path(String projectName, String packageName, String className, String methodName) {
+		public GTPath(String projectName, String packageName, String className, String methodName) {
 			type = METHOD;
 			this.projectName = projectName;
 			this.packageName = packageName;
@@ -275,7 +280,7 @@ public class GreenTea {
 			this.methodName = methodName;
 		}
 		
-		public Path(Path oldPath, String str) {
+		public GTPath(GTPath oldPath, String str) {
 			int type = oldPath.getType();
 			if(type < 4 && type > 0) {
 				this.type = type + 1;
@@ -300,15 +305,15 @@ public class GreenTea {
 			}
 		}
 		
-		public Path getParent() {
+		public GTPath getParent() {
 			if (type == PACKAGE) {
-				return new Path(projectName);
+				return new GTPath(projectName);
 			}
 			else if (type == CLASS) {
-				return new Path(projectName, packageName);
+				return new GTPath(projectName, packageName);
 			}
 			else if (type == METHOD) {
-				return new Path(projectName, packageName, className);
+				return new GTPath(projectName, packageName, className);
 			}
 			return null;
 		}
