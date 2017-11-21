@@ -31,7 +31,9 @@ public class GreenTea {
 	    treeViewer = new org.eclipse.jface.viewers.TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FILL);
         treeViewer.setContentProvider(new ViewContentProvider());
         treeViewer.getTree().setHeaderVisible(true);
-
+        treeViewer.setInput(ProjectAnalyser.getProjectNames());
+        
+        
         TreeViewerColumn mainColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
         mainColumn.getColumn().setText("Projects Structure");
         mainColumn.getColumn().setWidth(300);
@@ -61,7 +63,7 @@ public class GreenTea {
         
 	}
 	
-	//Will be moved to treeviewre
+	//Will be moved to treeViewer
     class ViewContentProvider implements ITreeContentProvider {
         public void inputChanged(Viewer v, Object oldInput, Object newInput) {
         }
@@ -72,39 +74,47 @@ public class GreenTea {
 
         @Override
         public Object[] getElements(Object inputElement) {
-        	return ProjectAnalyser.getProjectNames();
+        	if(inputElement instanceof String[]) {
+        		String projectNames[] = (String[])inputElement;
+        		List<Path> list = new ArrayList<Path>();
+        		for(String projectName : projectNames) {
+        			list.add(new Path(projectName));
+        		}
+        		return list.toArray(new Path[0]);
+        	}
+        	else {
+        		return null;
+        	}
         }
 
         @Override
         public Object[] getChildren(Object parentElement) {
-        	if(parentElement instanceof String) {
-        		String projectName = (String)parentElement;
-        		List<List<String>> array = new ArrayList<List<String>>();
-        		for(String packageName : ProjectAnalyser.getPackageNames(projectName)) {
-        			List<String> tmpArray = new ArrayList<String>();
-        			tmpArray.add(projectName);
-        			tmpArray.add(packageName);
-        			array.add(tmpArray);
-        		}
-        		return (List<String>[])array.toArray();
-        	}
-        	else {
-        		List<String> givenElement = (List<String>)parentElement;
-        		int size = givenElement.size();
-        		List<List<String>> array = new ArrayList<List<String>>();
-        		if(size == 2) {
-        			for(String className : ProjectAnalyser.getClassNames(givenElement.get(0), givenElement.get(1))) {
-        				List<String> tmpAray = givenElement;
-        				tmpAray.add(className);
-        				array.add(tmpAray);
+        	if(parentElement instanceof Path) {
+        		Path path = (Path)parentElement;
+        		List<Path> list = new ArrayList<Path>();
+        		if(path.getType() == Path.PROJECT) {
+        			String projectName = path.getProjectName();
+        			for(String packageName : ProjectAnalyser.getPackageNames(projectName)) {
+        				list.add(new Path(path, packageName));
         			}
+        			return list.toArray(new Path[0]);
         		}
-        		else if (size == 3) {
-        			for(String methodName : ProjectAnalyser.getMethodNames(givenElement.get(0), givenElement.get(1), givenElement.get(2))) {
-        				List<String> tmpAray = givenElement;
-        				tmpAray.add(methodName);
-        				array.add(tmpAray);
+        		else if (path.getType() == Path.PACKAGE) {
+        			String projectName = path.getProjectName();
+        			String packageName = path.getPackageName();
+        			for(String className : ProjectAnalyser.getClassNames(projectName, packageName)) {
+        				list.add(new Path(path, className));
         			}
+        			return list.toArray(new Path[0]);
+        		}
+        		else if (path.getType() == Path.CLASS) {
+        			String projectName = path.getProjectName();
+        			String packageName = path.getPackageName();
+        			String className = path.getClassName();
+        			for(String methodName : ProjectAnalyser.getMethodNames(projectName, packageName, className)) {
+        				list.add(new Path(path, methodName));
+        			}
+        			return list.toArray(new Path[0]);
         		}
         	}
         	return null;
@@ -112,31 +122,24 @@ public class GreenTea {
 
         @Override
         public Object getParent(Object element) {
-        	if(element instanceof String) {
-        		return null;
-        	}
-        	else {
-        		List<String> givenElement = (List<String>)element;
-        		int size = givenElement.size();
-        		if(size == 2) {
-        			return givenElement.get(0);
-        		}
-        		else if (size == 3) {
-        			givenElement.remove(2);
-        			return givenElement;
-        		}
-        		else if (size == 4) {
-        			givenElement.remove(3);
-        			return givenElement;
-        		}
+        	if (element instanceof Path) {
+        		return ((Path) element).getParent();
         	}
         	return null;
         }
 
         @Override
         public boolean hasChildren(Object element) {
-        	//TODO
-        	return true;
+        	if (element instanceof Path) {
+        		Path path = (Path)element;
+        		if(path.getType() < 1 || path.getType() > 3) {
+        			return false;
+        		}
+        		else {
+        			return true;
+        		}
+        	}
+        	return false;
         }
     }
     
@@ -151,14 +154,13 @@ public class GreenTea {
 
         @Override
         public StyledString getStyledText(Object element) {
-        	String name;
-        	if(element instanceof String) {
-        		name = (String)element;
+        	String name = "";
+        	
+        	if(element instanceof Path) {
+        		Path path = (Path)element;
+        		name = path.toString();
         	}
-        	else {
-        		List<String> array = (List<String>)element;
-        		name = array.get(array.size() - 1);
-        	}
+        	
         	StyledString result = new StyledString(name);        	
             return result;
         }
@@ -190,12 +192,18 @@ public class GreenTea {
 		private ImageDescriptor directoryImage;
 		private ResourceManager resourceManager;
 		
+		private final int index;
+		
 		public MetricProvider(int index) {
+			this.index = index;
 			//TODO match index to metric (functional?)
 		}
 		
 		@Override
         public StyledString getStyledText(Object element) {
+			if(element instanceof Path) {
+				return new StyledString(String.valueOf(index));
+			}
             return null;
         }
 
@@ -228,7 +236,119 @@ public class GreenTea {
 	}
 	
 	
-	
+	class Path {
+		static final int PROJECT = 1;
+		static final int PACKAGE = 2;
+		static final int CLASS = 3;
+		static final int METHOD = 4;
+		
+		private final int type;
+		
+		private String projectName;
+		private String packageName;
+		private String className;
+		private String methodName;
+		
+		public Path(String projectName) {
+			type = PROJECT;
+			this.projectName = projectName;
+		}
+		
+		public Path(String projectName, String packageName) {
+			type = PACKAGE;
+			this.projectName = projectName;
+			this.packageName = packageName;
+		}
+		
+		public Path(String projectName, String packageName, String className) {
+			type = CLASS;
+			this.projectName = projectName;
+			this.packageName = packageName;
+			this.className = className;
+		}
+		
+		public Path(String projectName, String packageName, String className, String methodName) {
+			type = METHOD;
+			this.projectName = projectName;
+			this.packageName = packageName;
+			this.className = className;
+			this.methodName = methodName;
+		}
+		
+		public Path(Path oldPath, String str) {
+			int type = oldPath.getType();
+			if(type < 4 && type > 0) {
+				this.type = type + 1;
+				this.projectName = oldPath.getProjectName();
+				if(type > 1) {
+					this.packageName = oldPath.getPackageName();
+				}
+				else {
+					this.packageName = str;
+				}
+				if(type > 2) {
+					this.className = oldPath.getClassName();
+					this.methodName = str;
+				}
+				else {
+					this.className = str;
+				}
+				
+			}
+			else {
+				this.type = 0;
+			}
+		}
+		
+		public Path getParent() {
+			if (type == PACKAGE) {
+				return new Path(projectName);
+			}
+			else if (type == CLASS) {
+				return new Path(projectName, packageName);
+			}
+			else if (type == METHOD) {
+				return new Path(projectName, packageName, className);
+			}
+			return null;
+		}
+		
+		public String getProjectName() {
+			return projectName;
+		}
+		
+		public String getPackageName() {
+			return packageName;
+		}
+		
+		public String getClassName() {
+			return className;
+		}
+		
+		public String getMethodName() {
+			return methodName;
+		}
+		
+		public String toString() {
+			if(type == PROJECT) {
+				return projectName;
+			}
+			else if(type == PACKAGE) {
+				return packageName;
+			}
+			else if(type == CLASS) {
+				return className;
+			}
+			else if(type == METHOD) {
+				return methodName;
+			}
+			return null;
+		}
+		
+		public int getType() {
+			return type;
+		}
+	}
 
 	@Focus
 	public void setFocus() {
