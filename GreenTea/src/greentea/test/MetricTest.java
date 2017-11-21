@@ -18,7 +18,7 @@ public class MetricTest {
 	@Test
 	public void MartinCouplingTest() {
 		double estimatedValue = 1;
-		assertEquals(estimatedValue, Metric.measureMartin("GreenTea", "testexample"));
+		assertEquals(estimatedValue, Metric.measureMartin("GreenTea", "testexample.Bank"));
 	}
 	
 	@Test
