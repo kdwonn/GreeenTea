@@ -12,13 +12,13 @@ public class MetricTest {
 	@Test
 	public void DhamaCouplingTest() {
 		double estimatedValue = 1/22;
-		assertEquals(estimatedValue, Metric.measureDhama()));
+		assertEquals(estimatedValue, Metric.measureDhama());
 	}
 	
 	@Test
 	public void MartinCouplingTest() {
 		double estimatedValue = 1;
-		assertEquals(estimatedValue, Metric.measureMartin()));
+		assertEquals(estimatedValue, Metric.measureMartin("GreenTea", "testexample"));
 	}
 	
 	@Test
