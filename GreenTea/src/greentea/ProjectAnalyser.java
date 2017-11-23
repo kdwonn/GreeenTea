@@ -17,6 +17,12 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 
+public class ProjectAnalyser {
+	/**
+	 * return names of project in workspace
+	 * @return String[]   
+	 */
+	public static String[] getProjectNames() {
 class ProjectAnalyser {
 	public static String[] getProjectNames() {
 		IJavaProject[] projects = getProjects();
@@ -28,6 +34,11 @@ class ProjectAnalyser {
 		return nameList.toArray(new String[] {});
 	}
 	
+	/**
+	 * return names of package in specific project
+	 * @param projectName as String
+	 * @return String[]
+	 */
 	public static String[] getPackageNames(String projectName) {
 		IPackageFragment[] packages = getPackages(projectName);
 		if(packages == null) return null;
@@ -38,6 +49,12 @@ class ProjectAnalyser {
 		return nameList.toArray(new String[] {});
 	}
 	
+	/**
+	 * return names of class in specific project, package
+	 * @param projectName as String
+	 * @param packageName as String
+	 * @return String[]
+	 */
 	public static String[] getClassNames(String projectName, String packageName) {
 		ICompilationUnit[] classes = getCompilationUnits(projectName, packageName);
 		if(classes == null) return null;
@@ -48,6 +65,13 @@ class ProjectAnalyser {
 		return nameList.toArray(new String[] {});
 	}
 	
+	/**
+	 * return sourcecode of class in specific project, package
+	 * @param projectName as String
+	 * @param packageName as String
+	 * @param ClassName as String
+	 * @return String
+	 */
 	public static String[] getMethodNames(String projectName, String packageName, String ClassName) {
 		ICompilationUnit compilationUnit = getCompilationUnit(projectName, packageName, ClassName);
 		if(compilationUnit == null) return null;
