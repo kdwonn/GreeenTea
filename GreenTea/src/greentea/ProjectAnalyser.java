@@ -9,8 +9,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
@@ -20,7 +22,9 @@ public class ProjectAnalyser {
 	 * return names of project in workspace
 	 * @return String[]   
 	 */
-	public String[] getProjectNames() {
+	public static String[] getProjectNames() {
+class ProjectAnalyser {
+	public static String[] getProjectNames() {
 		IJavaProject[] projects = getProjects();
 		if(projects == null) return null;
 		List<String> nameList = new LinkedList<String>();
@@ -35,7 +39,7 @@ public class ProjectAnalyser {
 	 * @param projectName as String
 	 * @return String[]
 	 */
-	public String[] getPackageNames(String projectName) {
+	public static String[] getPackageNames(String projectName) {
 		IPackageFragment[] packages = getPackages(projectName);
 		if(packages == null) return null;
 		List<String> nameList = new LinkedList<String>();
@@ -51,7 +55,7 @@ public class ProjectAnalyser {
 	 * @param packageName as String
 	 * @return String[]
 	 */
-	public String[] getClassNames(String projectName, String packageName) {
+	public static String[] getClassNames(String projectName, String packageName) {
 		ICompilationUnit[] classes = getCompilationUnits(projectName, packageName);
 		if(classes == null) return null;
 		List<String> nameList = new LinkedList<String>();
@@ -68,7 +72,25 @@ public class ProjectAnalyser {
 	 * @param ClassName as String
 	 * @return String
 	 */
-	public String getSourceCode(String projectName, String packageName, String ClassName) {
+	public static String[] getMethodNames(String projectName, String packageName, String ClassName) {
+		ICompilationUnit compilationUnit = getCompilationUnit(projectName, packageName, ClassName);
+		if(compilationUnit == null) return null;
+		List<String> nameList = new LinkedList<String>();
+		try {
+			IType[] types = compilationUnit.getAllTypes();
+			for(IType type : types) {
+				for(IMethod method : type.getMethods()) {
+					nameList.add(method.getElementName());
+				}
+			}
+		} catch (JavaModelException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return nameList.toArray(new String[0]);
+	}
+	
+	public static String getSourceCode(String projectName, String packageName, String ClassName) {
 		ICompilationUnit compilationUnit = getCompilationUnit(projectName, packageName, ClassName);
 		if(compilationUnit == null) return null;
 		try {
@@ -79,7 +101,7 @@ public class ProjectAnalyser {
 		}
 	}
 	
-	private IJavaProject[] getProjects() {
+	private static IJavaProject[] getProjects() {
 		IProject[] projects =  ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		List<IJavaProject> projectList = new LinkedList<IJavaProject>();
 		for(IProject prj : projects) {
@@ -91,7 +113,7 @@ public class ProjectAnalyser {
 		return projectList.toArray(new IJavaProject[] {});
 	}
 	
-	private IPackageFragment[] getPackages(String projectName) {
+	private static IPackageFragment[] getPackages(String projectName) {
 		IJavaProject[] projects = getProjects();
 		IJavaProject objectProject = null;
 		for(IJavaProject prj : projects) {
@@ -125,7 +147,7 @@ public class ProjectAnalyser {
 		
 	}
 	
-	private ICompilationUnit[] getCompilationUnits(String projectName, String packageName) {
+	private static ICompilationUnit[] getCompilationUnits(String projectName, String packageName) {
 		IPackageFragment[] packages = getPackages(projectName);
 		for(IPackageFragment pack : packages) {
 			if(pack.getElementName().equals(packageName)) {
@@ -140,7 +162,7 @@ public class ProjectAnalyser {
 		return null;
 	}
 	
-	private ICompilationUnit getCompilationUnit(String projectName, String packageName, String ClassName) {
+	private static ICompilationUnit getCompilationUnit(String projectName, String packageName, String ClassName) {
 		ICompilationUnit[] classes = getCompilationUnits(projectName, packageName);
 		for(ICompilationUnit compilationUnit : classes) {
 			if(compilationUnit.getElementName().equals(ClassName)) {
