@@ -9,7 +9,7 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.junit.Test;
 
 public class AnalyserTest {
-	@Test
+	/*@Test
 	public void getProjectTest() {
 		String[] names = greentea.ProjectAnalyser.getProjectNames();
 		for(String name : names) {
@@ -32,5 +32,5 @@ public class AnalyserTest {
 				assertNotNull(frag.getCompilationUnit(classNames[0]));
 			}
 		}
-	}
+	}*/
 }

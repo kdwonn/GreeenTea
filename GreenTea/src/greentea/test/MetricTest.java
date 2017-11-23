@@ -7,7 +7,7 @@ import org.junit.Test;
 import greentea.GreenTea;
 
 public class MetricTest {
-/*	@Test
+	@Test
 	public void DhamaCouplingTest() {
 		double estimatedValue = 1/22;
 		assertEqual(estimatedValue, greentea.MeasureMetric.measureCoupling(new testexample.Bank("bank")));
@@ -34,5 +34,5 @@ public class MetricTest {
 	public void MaintainIndexTest() {
 		double estimatedValue = 85.7;
 		assertEqual(estimatedValue, greentea.MeasureMetric.measureCoupling(new testexample.SimpleTest().cycle()));
-	}*/
+	}
 }

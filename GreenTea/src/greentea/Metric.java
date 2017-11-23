@@ -29,7 +29,6 @@ public class Metric {
 				int count = 0;
 
 				while(lastIndex != -1){
-
 				    lastIndex = source.indexOf(findStr,lastIndex);
 
 				    if(lastIndex != -1){
@@ -64,6 +63,21 @@ public class Metric {
 				}
 				return rmStringOperandSource;
 			}
+			
+			public void classifyKeword(StringTokenizer StrTokens) {
+				while(StrTokens.hasMoreTokens()) { 
+					if(keyword.contains(StrTokens.nextToken())) {
+						operatorDist++;
+						operatorCNT++;
+					}
+					else
+						operandDist++;
+						operandCNT++;
+				}
+			}
+			public double calHalsteadVol() {
+				return (operatorCNT + operandCNT) * Math.log(operandDist+operatorDist);
+			}
 		}
 		
 		public static void implementation() {
@@ -84,15 +98,20 @@ public class Metric {
 			hals.arithOpCheck(source);
 			System.out.println(hals.operatorCNT);
 			System.out.println(hals.operatorDist);
+			System.out.println(hals.operandCNT);
+			System.out.println(hals.operandDist);
 			
 			String tmpSource1=hals.rmStringOperand(source);
 			
 			StringTokenizer StrTokens = new StringTokenizer(tmpSource1,HalsteadVolume.arithOps+", \n");
 			
-			System.out.println(StrTokens.countTokens());
-			while(StrTokens.hasMoreTokens()) { System.out.println(StrTokens.nextToken()); }
+			hals.classifyKeword(StrTokens);
+			System.out.println(hals.operatorCNT);
+			System.out.println(hals.operatorDist);
 			System.out.println(hals.operandCNT);
+			System.out.println(hals.operandDist);
 			
+			System.out.println(hals.calHalsteadVol());
 			
 		}
 		
