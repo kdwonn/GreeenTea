@@ -24,9 +24,10 @@ public class Metric {
 		return 0;
 	}
 
-	static public int measureCyclomatic(IMethod method) {
+	static public int measureCyclomatic(String projectName, String packageName, String className, String methodName) {
 		// to T_S03
-		return 0;
+		CyclomaticComplexity cyclomaticCal = new CyclomaticComplexity(projectName, packageName, className, methodName);
+		return cyclomaticCal.getResult();
 	}
 
 	static public double measureMaintain(IMethod method) {
