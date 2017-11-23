@@ -23,8 +23,6 @@ public class ProjectAnalyser {
 	 * @return String[]   
 	 */
 	public static String[] getProjectNames() {
-class ProjectAnalyser {
-	public static String[] getProjectNames() {
 		IJavaProject[] projects = getProjects();
 		if(projects == null) return null;
 		List<String> nameList = new LinkedList<String>();
