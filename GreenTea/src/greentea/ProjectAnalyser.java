@@ -65,13 +65,6 @@ class ProjectAnalyser {
 		return nameList.toArray(new String[] {});
 	}
 	
-	/**
-	 * return sourcecode of class in specific project, package
-	 * @param projectName as String
-	 * @param packageName as String
-	 * @param ClassName as String
-	 * @return String
-	 */
 	public static String[] getMethodNames(String projectName, String packageName, String ClassName) {
 		ICompilationUnit compilationUnit = getCompilationUnit(projectName, packageName, ClassName);
 		if(compilationUnit == null) return null;
@@ -90,6 +83,13 @@ class ProjectAnalyser {
 		return nameList.toArray(new String[0]);
 	}
 	
+	/**
+	 * return sourcecode of class in specific project, package
+	 * @param projectName as String
+	 * @param packageName as String
+	 * @param ClassName as String
+	 * @return String
+	 */
 	public static String getSourceCode(String projectName, String packageName, String ClassName) {
 		ICompilationUnit compilationUnit = getCompilationUnit(projectName, packageName, ClassName);
 		if(compilationUnit == null) return null;
@@ -100,6 +100,7 @@ class ProjectAnalyser {
 			return null;
 		}
 	}
+	
 	
 	private static IJavaProject[] getProjects() {
 		IProject[] projects =  ResourcesPlugin.getWorkspace().getRoot().getProjects();
@@ -171,5 +172,4 @@ class ProjectAnalyser {
 		}
 		return null;
 	}
-	
 }
