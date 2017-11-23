@@ -9,13 +9,19 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 
-class ProjectAnalyser {
+public class ProjectAnalyser {
+	/**
+	 * return names of project in workspace
+	 * @return String[]   
+	 */
 	public static String[] getProjectNames() {
 		IJavaProject[] projects = getProjects();
 		if(projects == null) return null;
@@ -26,6 +32,11 @@ class ProjectAnalyser {
 		return nameList.toArray(new String[] {});
 	}
 	
+	/**
+	 * return names of package in specific project
+	 * @param projectName as String
+	 * @return String[]
+	 */
 	public static String[] getPackageNames(String projectName) {
 		IPackageFragment[] packages = getPackages(projectName);
 		if(packages == null) return null;
@@ -36,6 +47,12 @@ class ProjectAnalyser {
 		return nameList.toArray(new String[] {});
 	}
 	
+	/**
+	 * return names of class in specific project, package
+	 * @param projectName as String
+	 * @param packageName as String
+	 * @return String[]
+	 */
 	public static String[] getClassNames(String projectName, String packageName) {
 		ICompilationUnit[] classes = getCompilationUnits(projectName, packageName);
 		if(classes == null) return null;
@@ -46,6 +63,31 @@ class ProjectAnalyser {
 		return nameList.toArray(new String[] {});
 	}
 	
+	public static String[] getMethodNames(String projectName, String packageName, String ClassName) {
+		ICompilationUnit compilationUnit = getCompilationUnit(projectName, packageName, ClassName);
+		if(compilationUnit == null) return null;
+		List<String> nameList = new LinkedList<String>();
+		try {
+			IType[] types = compilationUnit.getAllTypes();
+			for(IType type : types) {
+				for(IMethod method : type.getMethods()) {
+					nameList.add(method.getElementName());
+				}
+			}
+		} catch (JavaModelException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return nameList.toArray(new String[0]);
+	}
+	
+	/**
+	 * return sourcecode of class in specific project, package
+	 * @param projectName as String
+	 * @param packageName as String
+	 * @param ClassName as String
+	 * @return String
+	 */
 	public static String getSourceCode(String projectName, String packageName, String ClassName) {
 		ICompilationUnit compilationUnit = getCompilationUnit(projectName, packageName, ClassName);
 		if(compilationUnit == null) return null;
@@ -56,6 +98,7 @@ class ProjectAnalyser {
 			return null;
 		}
 	}
+	
 	
 	private static IJavaProject[] getProjects() {
 		IProject[] projects =  ResourcesPlugin.getWorkspace().getRoot().getProjects();
@@ -127,5 +170,4 @@ class ProjectAnalyser {
 		}
 		return null;
 	}
-	
 }
