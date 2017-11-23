@@ -2,16 +2,12 @@ package greentea.test;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotLabel;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotMenu;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotText;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,49 +19,68 @@ public class UiTest {
 	public static void initBot() {
 		// init swtbot
 		bot = new SWTWorkbenchBot();
-		bot.menu("File").menu("New").menu("Project...").click();
-		
-		SWTBotShell dialog = bot.shell("New Project");
-	    dialog.activate();
-	    
-	    bot.tree().expandNode("Java").select("Java Project");
-	    bot.button("Next >").click();
-	    bot.textWithLabel("Project name:").setText("Demo");
-	    bot.button("Finish").click();
-	    
-	    dialog = bot.shell("Open Associated Perspective?");
-	    bot.button("No").click();
+		bot.viewByTitle("Welcome").close();
 	}
-	@Test
-	public void testPulginStart() {
-		// Start plugin and check ecisting project appears in tree view
+
+	@AfterClass
+	public static void afterClass() {
+		bot.sleep(2000);
+		bot.resetWorkbench();
+	}
+	
+	/*
+	 * Test case for checking tutorial open button
+	 * Tutorial open button is placed in the toolbar of this plugin.
+	 */ 
+	@Test 
+	public void testOpenTutorial() {
 		bot.menu("Window").menu("Show View").menu("Other...").click();
-		SWTBotShell dialog = bot.shell("Show View");
-	    dialog.activate();
-	    bot.tree().expandNode("CSED332").select("Package Overview");
-	    bot.button("Open").click();
-	    
-	    assertEquals("Demo", bot.viewByTitle("GreenTea").bot().tree().getTreeItem("Demo").getText());
+		bot.tree().expandNode("Green Tea").getNode("Green Tea").select();
+		bot.button("Open").click();
+		
+		SWTBotView view = bot.viewByTitle("Green Tea");
+		assertEquals("Open Tutorial", view.getToolbarButtons().get(0).getToolTipText());
+		view.getToolbarButtons().get(0).click();
+		view.bot().toolbarButton().click();
+		
+		assertEquals("Tutorial", bot.activeView().getTitle());
 	}
+	
+	/*
+	 * Test case for checking text report function and creating report md file.
+	 * Report button is placed in the toolbar of this plugin.
+	 */
 	@Test
-	public void testAddPackageClass() {
-		// Add new package and class in workspace and check tree view is updated
-		bot.menu("File").menu("New").menu("Package").click();
-	    SWTBotShell dialog = bot.shell("New java Package");
-	    dialog.activate();
-	    bot.textWithLabel("Source folder:").setText("Demo/src");
-	    bot.textWithLabel("Name:").setText("demoPackage");
-	    bot.button("Finish").click();
-	    
-	    bot.menu("File").menu("New").menu("File").click();
-	    dialog = bot.shell("New File");
-	    dialog.activate();
-	    bot.textWithLabel("Enter or select the parent folder:").setText("Demo/src/demoPackage");
-	    bot.textWithLabel("File name:").setText("simple.java");
-	    bot.button("Finish").click();
-	    
-	    
-		assertEquals("demoPackage", bot.tree().getTreeItem("homework5").getText());
-		assertEquals("simple.java", bot.tree().getTreeItem("simple.java").getText());
+	public void testMakeTextReport() {
+		bot.menu("Window").menu("Show View").menu("Other...").click();
+		bot.tree().expandNode("Green Tea").getNode("Green Tea").select();
+		bot.button("Open").click();
+		
+		SWTBotView view = bot.viewByTitle("Green Tea");
+		assertEquals("Make Text report", view.getToolbarButtons().get(1).getToolTipText());
+		view.getToolbarButtons().get(1).click();
+		view.bot().toolbarButton().click();
+		
+		File report = new File("text_report.md");
+		assertTrue(report.exists());
+	}
+	
+	/*
+	 * Test case for checking logging metrics function
+	 * Log button is placed in the toolbar of this plugin.
+	 */
+	@Test
+	public void testMakeLog() {
+		bot.menu("Window").menu("Show View").menu("Other...").click();
+		bot.tree().expandNode("Green Tea").getNode("Green Tea").select();
+		bot.button("Open").click();
+		
+		SWTBotView view = bot.viewByTitle("Green Tea");
+		assertEquals("Make Log file", view.getToolbarButtons().get(2).getToolTipText());
+		view.getToolbarButtons().get(2).click();
+		view.bot().toolbarButton().click();
+		
+		File report = new File("metric_log.txt");
+		assertTrue(report.exists());
 	}
 }
