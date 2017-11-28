@@ -9,7 +9,7 @@ import greentea.GreenTea;
 import greentea.Metric;
 
 public class MetricTest {
-	/*@Test
+	@Test
 	public void DhamaCouplingTest() {
 		double estimatedValue = 1/22;
 		assertEquals(estimatedValue, Metric.measureDhama());
@@ -23,9 +23,10 @@ public class MetricTest {
 	
 	@Test
 	public void HalsteadVolumeTest() {
-		double estimatedValue = 138.3;
-		IMethod dummy = null;
-		assertEquals(estimatedValue, Metric.measureHalstead(dummy));
+		double epsilon=0.00001;
+		double estimatedValue = 234.58;
+		boolean isSame=Math.abs(estimatedValue-Metric.measureHalstead("projectName", "packageName", "className", "main"))<epsilon;
+		assertEquals(true,isSame);
 	}
 	
 	@Test
@@ -39,5 +40,5 @@ public class MetricTest {
 		double estimatedValue = 85.7;
 		IMethod dummy = null;
 		assertEquals(estimatedValue, Metric.measureMaintain(dummy));
-	}*/
+	}
 }

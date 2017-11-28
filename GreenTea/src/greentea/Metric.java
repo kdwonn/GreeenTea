@@ -32,23 +32,23 @@ public class Metric {
 		return cyclomaticCal.getResult();
 	}
 
-	/*static public double measureMaintain(IMethod method) {
+	static public double measureMaintain(IMethod method) {
 		return Math.max(0, (171
 				- 5.2 * Math.log(Metric.measureHalstead(method))
 				- 0.23 * Metric.measureCyclomatic(method)
 				- 16.2 * Math.log(Metric.measureLOC(method))
 				) * 100 / 171 );
 	}
-*/
+
 	static public int measureDhama() {
 		// to T_S04
 		return 0;
 	}
 
-	/*static public int measureMartin(String proj, String pckg) {
+	static public int measureMartin(String proj, String pckg) {
 		MartinCoupling mc = new MartinCoupling(proj, pckg);
 		return mc.getResult();
-	}*/
+	}
 
 	class MartinCoupling {
 		private int afferentCoupling;

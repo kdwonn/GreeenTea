@@ -131,7 +131,7 @@ public class HalsteadVolume {
 			}
 		}
 	}
-	public double getHalsteadVol() {
+	public double getResult() {
 		String source = this.methodRepresent.toString();
 		
 		this.arithOpCheck(source);
