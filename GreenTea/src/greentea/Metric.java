@@ -3,12 +3,11 @@ package greentea;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
+
 
 import org.eclipse.jdt.core.*;
-import org.eclipse.jdt.core.search.*;
 
-import practice.HalsteadVolume;
+
 
 
 public class Metric {
@@ -149,111 +148,6 @@ public class Metric {
 			}
 			return efferentCoupling / (afferentCoupling + efferentCoupling);
 		}
-	}
-	
-	
-	static class HalsteadVolume{	
-
-		private static final  ArrayList<String> keyword = new ArrayList<String>(Arrays.asList(
-				"abstract","continue","for","new","switch","assert","default","goto","package","synchronized"
-				,"boolean","do","if","private","this","break","double","implements","protected","throw","byte"
-				,"else","import","public","throws","case","enum","instanceof","return","transient","catch","extends"
-				,"int","short","try","char","final","interface","static","void","class","finally","long","strictfp"
-				,"volatile","const","float","native","super","while"
-				));
-
-		private static final String[] ops = {
-				"++","--","*",".",";","/","%","!",">","<",">=","<=","==",":"
-				,"{","}","(",")","[","]","<",">"};
-
-		private static final String arithOps="++--*.;/%!><>=<==:{}()[]<>";
-
-		private int operatorCNT =0, operandCNT =0, operatorDist =0, operandDist=0;
-
-		public int countWord(String source, String findStr) {
-			int lastIndex = 0;
-			int count = 0;
-
-			while(lastIndex != -1){
-				lastIndex = source.indexOf(findStr,lastIndex);
-
-				if(lastIndex != -1){
-					count ++;
-					lastIndex += findStr.length();
-				}
-			}
-			return count;
-		}
-
-		public void arithOpCheck(String source) {
-			for(int i=0; i<ops.length; i++) {
-				if(source.contains(ops[i])) {
-					operatorDist++;
-					operatorCNT+=countWord(source, ops[i]);
-				}
-			}
-		}
-
-		public String rmStringOperand(String source) {
-			String[] StrOperandRemoved=source.split("\"");
-			String rmStringOperandSource="";
-
-			//System.out.println(StrTokens);
-			for(int i=0; i<StrOperandRemoved.length; i++) {
-				if(i%2==1)
-					operandCNT++;
-				else
-					rmStringOperandSource+=StrOperandRemoved[i];
-			}
-			return rmStringOperandSource;
-		}
-
-		public void classifyKeword(StringTokenizer StrTokens) {
-			ArrayList<String> optContainer = new ArrayList<String>();
-			ArrayList<String> opdContainer = new ArrayList<String>();
-			String nToken=null;
-			
-			while(StrTokens.hasMoreTokens()) { 
-				nToken = StrTokens.nextToken();
-				if(keyword.contains(nToken)) {
-					if(!optContainer.contains(nToken)) {
-						operatorDist++;
-						optContainer.add(nToken);
-					}
-					operatorCNT++;
-				}
-				else {
-					if(!opdContainer.contains(nToken)) {
-						operandDist++;
-						opdContainer.add(nToken);
-					}
-					operandCNT++;
-				}
-			}
-		}
-		public double getHalsteadVol() {
-			
-			final String source= "public class practice {"
-					+"\npublic static void main(String[] args) {"
-					+	"\nString data = \"happy new     year   djkdl!\";"
-					+	"\nStringTokenizer strToken = new StringTokenizer(data,\" \");"
-					+	"\nSystem.out.println(strToken.countTokens());"
-					+	"\nwhile(strToken.hasMoreTokens()) {"
-					+		"\nSystem.out.println(strToken.nextToken());"
-					+	"\n}"
-					+	"\nSystem.out.println(\"well done!\");"
-					+"\n}"
-					+"\n}";
-			
-			this.arithOpCheck(source);
-			
-			String tmpSource1=this.rmStringOperand(source);
-			StringTokenizer StrTokens = new StringTokenizer(tmpSource1,HalsteadVolume.arithOps+", \n");
-			this.classifyKeword(StrTokens);
-			
-			double result = (operatorCNT + operandCNT) * Math.log(operandDist+operatorDist);
-			return Math.round(result * 100d)/100d;
-		}	
 	}
 }
 
