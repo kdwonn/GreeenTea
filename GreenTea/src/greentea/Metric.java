@@ -8,6 +8,8 @@ import java.util.StringTokenizer;
 import org.eclipse.jdt.core.*;
 import org.eclipse.jdt.core.search.*;
 
+import practice.HalsteadVolume;
+
 
 public class Metric {
 	public Metric() {
@@ -30,23 +32,23 @@ public class Metric {
 		return cyclomaticCal.getResult();
 	}
 
-	static public double measureMaintain(IMethod method) {
+	/*static public double measureMaintain(IMethod method) {
 		return Math.max(0, (171
 				- 5.2 * Math.log(Metric.measureHalstead(method))
 				- 0.23 * Metric.measureCyclomatic(method)
 				- 16.2 * Math.log(Metric.measureLOC(method))
 				) * 100 / 171 );
 	}
-
+*/
 	static public int measureDhama() {
 		// to T_S04
 		return 0;
 	}
 
-	static public int measureMartin(String proj, String pckg) {
+	/*static public int measureMartin(String proj, String pckg) {
 		MartinCoupling mc = new MartinCoupling(proj, pckg);
 		return mc.getResult();
-	}
+	}*/
 
 	class MartinCoupling {
 		private int afferentCoupling;
@@ -147,83 +149,90 @@ public class Metric {
 			}
 			return efferentCoupling / (afferentCoupling + efferentCoupling);
 		}
+	}
+	
+	
+	static class HalsteadVolume{	
 
-		public static class HalsteadVolume{	
+		private static final  ArrayList<String> keyword = new ArrayList<String>(Arrays.asList(
+				"abstract","continue","for","new","switch","assert","default","goto","package","synchronized"
+				,"boolean","do","if","private","this","break","double","implements","protected","throw","byte"
+				,"else","import","public","throws","case","enum","instanceof","return","transient","catch","extends"
+				,"int","short","try","char","final","interface","static","void","class","finally","long","strictfp"
+				,"volatile","const","float","native","super","while"
+				));
 
-			private static final ArrayList<String> keyword = new ArrayList<String>(Arrays.asList(
-					"abstract","continue","for","new","switch","assert","default","goto","package","synchronized"
-					,"boolean","do","if","private","this","break","double","implements","protected","throw","byte"
-					,"else","import","public","throws","case","enum","instanceof","return","transient","catch","extends"
-					,"int","short","try","char","final","interface","static","void","class","finally","long","strictfp"
-					,"volatile","const","float","native","super","while"
-					));
+		private static final String[] ops = {
+				"++","--","*",".",";","/","%","!",">","<",">=","<=","==",":"
+				,"{","}","(",")","[","]","<",">"};
 
-			private static final String[] ops = {
-					"++","--","*",".",";","/","%","!",">","<",">=","<=","==",":"
-					,"{","}","(",")","[","]","<",">"};
+		private static final String arithOps="++--*.;/%!><>=<==:{}()[]<>";
 
-			private static final String arithOps="++--*.;/%!><>=<==:{}()[]<>";
+		private int operatorCNT =0, operandCNT =0, operatorDist =0, operandDist=0;
 
-			private int operatorCNT =0, operandCNT =0, operatorDist =0, operandDist=0;
+		public int countWord(String source, String findStr) {
+			int lastIndex = 0;
+			int count = 0;
 
+			while(lastIndex != -1){
+				lastIndex = source.indexOf(findStr,lastIndex);
 
-			public int countWord(String source, String findStr) {
-				int lastIndex = 0;
-				int count = 0;
-
-				while(lastIndex != -1){
-					lastIndex = source.indexOf(findStr,lastIndex);
-
-					if(lastIndex != -1){
-						count ++;
-						lastIndex += findStr.length();
-					}
-				}
-				return count;
-			}
-
-
-			public void arithOpCheck(String source) {
-				for(int i=0; i<ops.length; i++) {
-					if(source.contains(ops[i])) {
-						operatorDist++;
-						operatorCNT+=countWord(source, ops[i]);
-					}
+				if(lastIndex != -1){
+					count ++;
+					lastIndex += findStr.length();
 				}
 			}
+			return count;
+		}
 
-
-			public String rmStringOperand(String source) {
-				String[] StrOperandRemoved=source.split("\"");
-				String rmStringOperandSource="";
-
-				//System.out.println(StrTokens);
-				for(int i=0; i<StrOperandRemoved.length; i++) {
-					if(i%2==1)
-						operandCNT++;
-					else
-						rmStringOperandSource+=StrOperandRemoved[i];
+		public void arithOpCheck(String source) {
+			for(int i=0; i<ops.length; i++) {
+				if(source.contains(ops[i])) {
+					operatorDist++;
+					operatorCNT+=countWord(source, ops[i]);
 				}
-				return rmStringOperandSource;
-			}
-
-			public void classifyKeword(StringTokenizer StrTokens) {
-				while(StrTokens.hasMoreTokens()) { 
-					if(keyword.contains(StrTokens.nextToken())) {
-						operatorDist++;
-						operatorCNT++;
-					}
-					else
-						operandDist++;
-					operandCNT++;
-				}
-			}
-			public double calHalsteadVol() {
-				return (operatorCNT + operandCNT) * Math.log(operandDist+operatorDist);
 			}
 		}
 
-		public static void implementation() {
+		public String rmStringOperand(String source) {
+			String[] StrOperandRemoved=source.split("\"");
+			String rmStringOperandSource="";
+
+			//System.out.println(StrTokens);
+			for(int i=0; i<StrOperandRemoved.length; i++) {
+				if(i%2==1)
+					operandCNT++;
+				else
+					rmStringOperandSource+=StrOperandRemoved[i];
+			}
+			return rmStringOperandSource;
+		}
+
+		public void classifyKeword(StringTokenizer StrTokens) {
+			ArrayList<String> optContainer = new ArrayList<String>();
+			ArrayList<String> opdContainer = new ArrayList<String>();
+			String nToken=null;
+			
+			while(StrTokens.hasMoreTokens()) { 
+				nToken = StrTokens.nextToken();
+				if(keyword.contains(nToken)) {
+					if(!optContainer.contains(nToken)) {
+						operatorDist++;
+						optContainer.add(nToken);
+					}
+					operatorCNT++;
+				}
+				else {
+					if(!opdContainer.contains(nToken)) {
+						operandDist++;
+						opdContainer.add(nToken);
+					}
+					operandCNT++;
+				}
+			}
+		}
+		public double getHalsteadVol() {
+			
 			final String source= "public class practice {"
 					+"\npublic static void main(String[] args) {"
 					+	"\nString data = \"happy new     year   djkdl!\";"
@@ -235,31 +244,16 @@ public class Metric {
 					+	"\nSystem.out.println(\"well done!\");"
 					+"\n}"
 					+"\n}";
-
-			HalsteadVolume hals = new HalsteadVolume();
-
-			hals.arithOpCheck(source);
-			System.out.println(hals.operatorCNT);
-			System.out.println(hals.operatorDist);
-			System.out.println(hals.operandCNT);
-			System.out.println(hals.operandDist);
-
-			String tmpSource1=hals.rmStringOperand(source);
-
+			
+			this.arithOpCheck(source);
+			
+			String tmpSource1=this.rmStringOperand(source);
 			StringTokenizer StrTokens = new StringTokenizer(tmpSource1,HalsteadVolume.arithOps+", \n");
-
-			hals.classifyKeword(StrTokens);
-			System.out.println(hals.operatorCNT);
-			System.out.println(hals.operatorDist);
-			System.out.println(hals.operandCNT);
-			System.out.println(hals.operandDist);
-
-			System.out.println(hals.calHalsteadVol());
-
-		}
-
-		public static void main(String[] args) {
-			implementation();
-		}
+			this.classifyKeword(StrTokens);
+			
+			double result = (operatorCNT + operandCNT) * Math.log(operandDist+operatorDist);
+			return Math.round(result * 100d)/100d;
+		}	
 	}
 }
+
