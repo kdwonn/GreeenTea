@@ -20,9 +20,10 @@ public class Metric {
 		return 0;
 	}
 
-	static public double measureHalstead(IMethod method) {
+	static public double measureHalstead(String projectName, String packageName, String className, String methodName) {
 		// T_S02
-		return 0;
+		HalsteadVolume hals = new HalsteadVolume(projectName, packageName, className, methodName);
+		return hals.getResult();
 	}
 
 	static public int measureCyclomatic(String projectName, String packageName, String className, String methodName) {
