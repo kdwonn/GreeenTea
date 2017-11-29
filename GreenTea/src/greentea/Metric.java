@@ -30,10 +30,10 @@ public class Metric {
 		return cyclomaticCal.getResult();
 	}
 
-	static public double measureMaintain(IMethod method) {
+	static public double measureMaintain(IMethod method, String projectName, String packageName, String className, String methodName) {
 		return Math.max(0, (171
 				- 5.2 * Math.log(Metric.measureHalstead(method))
-				- 0.23 * Metric.measureCyclomatic(method)
+				- 0.23 * Metric.measureCyclomatic(projectName, packageName, className, methodName)
 				- 16.2 * Math.log(Metric.measureLOC(method))
 				) * 100 / 171 );
 	}
@@ -48,7 +48,7 @@ public class Metric {
 		return mc.getResult();
 	}
 
-	class MartinCoupling {
+	static class MartinCoupling {
 		private int afferentCoupling;
 		private int efferentCoupling;
 		List<String> innerClassesName;
@@ -148,9 +148,9 @@ public class Metric {
 			return efferentCoupling / (afferentCoupling + efferentCoupling);
 		}
 
-		public static class HalsteadVolume{	
+		class HalsteadVolume{	
 
-			private static final ArrayList<String> keyword = new ArrayList<String>(Arrays.asList(
+			private final ArrayList<String> keyword = new ArrayList<String>(Arrays.asList(
 					"abstract","continue","for","new","switch","assert","default","goto","package","synchronized"
 					,"boolean","do","if","private","this","break","double","implements","protected","throw","byte"
 					,"else","import","public","throws","case","enum","instanceof","return","transient","catch","extends"
@@ -158,7 +158,7 @@ public class Metric {
 					,"volatile","const","float","native","super","while"
 					));
 
-			private static final String[] ops = {
+			private final String[] ops = {
 					"++","--","*",".",";","/","%","!",">","<",">=","<=","==",":"
 					,"{","}","(",")","[","]","<",">"};
 
@@ -223,7 +223,7 @@ public class Metric {
 			}
 		}
 
-		public static void implementation() {
+		public void implementation() {
 			final String source= "public class practice {"
 					+"\npublic static void main(String[] args) {"
 					+	"\nString data = \"happy new     year   djkdl!\";"
@@ -258,7 +258,7 @@ public class Metric {
 
 		}
 
-		public static void main(String[] args) {
+		public void main(String[] args) {
 			implementation();
 		}
 	}

@@ -32,12 +32,12 @@ public class MetricTest {
 	public void CyclomaticComplexTest() {
 		double estimatedValue = 3;
 		IMethod dummy = null;
-		assertEquals(estimatedValue, Metric.measureCyclomatic(dummy));
+		assertEquals(estimatedValue, Metric.measureCyclomatic("GreenTea", "testexample.Bank", "SimpleTest", "cycle"));
 	}
 	@Test
 	public void MaintainIndexTest() {
 		double estimatedValue = 85.7;
 		IMethod dummy = null;
-		assertEquals(estimatedValue, Metric.measureMaintain(dummy));
+		assertEquals(estimatedValue, Metric.measureMaintain(dummy, "GreenTea", "testexample.Bank", "SimpleTest", "cycle"));
 	}
 }
