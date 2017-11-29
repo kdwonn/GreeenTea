@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.jdt.core.*;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -40,20 +41,38 @@ public class GreenTea {
         
         TreeViewerColumn mainColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
         mainColumn.getColumn().setText("Projects Structure");
-        mainColumn.getColumn().setWidth(300);
+        mainColumn.getColumn().setWidth(275);
         mainColumn.setLabelProvider(new DelegatingStyledCellLabelProvider(new ViewLabelProvider()));
 
         TreeViewerColumn metric1Column = new TreeViewerColumn(treeViewer, SWT.NONE);
-        metric1Column.getColumn().setText("metric1");
-        metric1Column.getColumn().setWidth(75);
+        metric1Column.getColumn().setText("Line of Code");
+        metric1Column.getColumn().setWidth(150);
         metric1Column.getColumn().setAlignment(SWT.RIGHT);
         metric1Column.setLabelProvider(new DelegatingStyledCellLabelProvider(new MetricProvider(1)));
         
         TreeViewerColumn metric2Column = new TreeViewerColumn(treeViewer, SWT.NONE);
-        metric2Column.getColumn().setText("metric2");
-        metric2Column.getColumn().setWidth(75);
+        metric2Column.getColumn().setText("Halstead Volume");
+        metric2Column.getColumn().setWidth(150);
         metric2Column.getColumn().setAlignment(SWT.RIGHT);
         metric2Column.setLabelProvider(new DelegatingStyledCellLabelProvider(new MetricProvider(2)));
+
+        TreeViewerColumn metric3Column = new TreeViewerColumn(treeViewer, SWT.NONE);
+        metric3Column.getColumn().setText("Cyclomatic Complexity");
+        metric3Column.getColumn().setWidth(150);
+        metric3Column.getColumn().setAlignment(SWT.RIGHT);
+        metric3Column.setLabelProvider(new DelegatingStyledCellLabelProvider(new MetricProvider(3)));
+
+        TreeViewerColumn metric4Column = new TreeViewerColumn(treeViewer, SWT.NONE);
+        metric4Column.getColumn().setText("Martin's Coupling Metric");
+        metric4Column.getColumn().setWidth(150);
+        metric4Column.getColumn().setAlignment(SWT.RIGHT);
+        metric4Column.setLabelProvider(new DelegatingStyledCellLabelProvider(new MetricProvider(4)));
+
+        TreeViewerColumn metric5Column = new TreeViewerColumn(treeViewer, SWT.NONE);
+        metric5Column.getColumn().setText("Maintainability Index");
+        metric5Column.getColumn().setWidth(150);
+        metric5Column.getColumn().setAlignment(SWT.RIGHT);
+        metric5Column.setLabelProvider(new DelegatingStyledCellLabelProvider(new MetricProvider(5)));
 
 	    treeViewer.addDoubleClickListener(new IDoubleClickListener() {
         	@Override
@@ -207,13 +226,44 @@ public class GreenTea {
 		
 		public MetricProvider(int index) {
 			this.index = index;
-			//TODO match index to metric (functional?)
 		}
 		
 		@Override
         public StyledString getStyledText(Object element) {
 			if(element instanceof GTPath) {
-				return new StyledString(String.valueOf(index));
+				GTPath path = (GTPath) element;
+	            String projectName, packageName, className, methodName, result = null;
+	            projectName = path.getProjectName();
+	            packageName = path.getPackageName();
+	            className = path.getClassName();
+	            methodName = path.getMethodName();
+	            
+	            IMethod method = ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);
+	            
+	        	switch(index) {
+	                case 1:
+	                	if(path.getType() == GTPath.METHOD)
+	                		result = String.valueOf(Metric.measureLOC(method));
+	                    break;
+	                case 2:
+	                	if(path.getType() == GTPath.METHOD)
+	                		result = String.valueOf(Metric.measureHalstead(method));
+	                    break;
+	                case 3:
+	                	if(path.getType() == GTPath.METHOD)
+	                		result = String.valueOf(Metric.measureCyclomatic(projectName, packageName, className, methodName));
+	                    break;
+	                case 4:
+	                	if(path.getType() == GTPath.PACKAGE)
+	                		result = String.valueOf(Metric.measureMartin(projectName, packageName));
+	                    break;
+	                case 5:if(path.getType() == GTPath.METHOD)
+                		result = String.valueOf(Metric.measureMaintain(method, projectName, packageName, className, methodName));
+	                    break;
+	            }				
+				
+				return new StyledString(result);
+				
 			}
             return null;
         }

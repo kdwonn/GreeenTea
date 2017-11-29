@@ -170,4 +170,22 @@ public class ProjectAnalyser {
 		}
 		return null;
 	}
+	
+	static IMethod getIMethod(String projectName, String packageName, String className, String methodName) {
+		IMethod method = null;
+        ICompilationUnit compilationUnit = ProjectAnalyser.getCompilationUnit(projectName, packageName, className);
+		try {
+			IType[] types = compilationUnit.getAllTypes();
+			for(IType type : types) {
+				for(IMethod itr : type.getMethods()) {
+					if(itr.getElementName().equals(methodName)) {
+						method = itr;
+					}
+				}
+			}
+		} catch (JavaModelException e) {
+			e.printStackTrace();
+		}
+		return method;
+	}
 }
