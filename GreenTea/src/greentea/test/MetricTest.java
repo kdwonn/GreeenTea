@@ -32,8 +32,7 @@ public class MetricTest {
 	@Test
 	public void CyclomaticComplexTest() {
 		double estimatedValue = 3;
-		IMethod dummy = null;
-		assertEquals(estimatedValue, Metric.measureCyclomatic("GreenTea", "testexample.Bank", "SimpleTest", "cycle"));
+		assertEquals(true, estimatedValue == Metric.measureCyclomatic("GreenTea", "testexample", "SimpleTest", "cycle"));
 	}
 	@Test
 	public void MaintainIndexTest() {

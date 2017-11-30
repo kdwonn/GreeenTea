@@ -51,7 +51,7 @@ public class Metric {
 
 	static public double measureMaintain(IMethod method, String projectName, String packageName, String className, String methodName) {
 		return Math.max(0, (171
-				- 5.2 * Math.log(Metric.measureHalstead(method))
+				- 5.2 * Math.log(Metric.measureHalstead(projectName, packageName, className, methodName))
 				- 0.23 * Metric.measureCyclomatic(projectName, packageName, className, methodName)
 				- 16.2 * Math.log(Metric.measureLOC(method))
 				) * 100 / 171 );

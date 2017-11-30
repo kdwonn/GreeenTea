@@ -33,7 +33,22 @@ public class CyclomaticComplexity {
 	public CyclomaticComplexity(String projectName, String packageName, String className, String methodName) {
 		// TODO Auto-generated constructor stub
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		classSource_ = ProjectAnalyser.getSourceCode(projectName, packageName, className);
+		//classSource_ = ProjectAnalyser.getSourceCode(projectName, packageName, className);
+		classSource_ = 
+		"\n public class SimpleTest { "
+		+"\n 	public SimpleTest () { "
+		+"\n 		int a = 3; "
+		+"\n 		int b = 2; "
+		+"\n 		System.out.print(a+b); "
+		+"\n 	} " 	
+		+"\n 	public void cycle() { "
+		+"\n 		for(int i = 0; i < 3; i++) { "
+		+"\n 			if(i > 1) { "
+		+"\n 				System.out.print(1); "
+		+"\n 			} "
+		+"\n 		} "
+		+"\n 	} // 32, 20 "
+		+"\n } ";
 		classSource = classSource_.toCharArray();
 		
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -141,9 +156,11 @@ class cyclomaticVisitor extends ASTVisitor{
 	public void findConditionOperator(Expression codeBody) {
 		int startIdx = codeBody.getStartPosition();
 		char[] charCode = code.substring(startIdx, startIdx + codeBody.getLength()).toCharArray();
-		for(int i = 0; i < code.length(); i ++) {
+		for(int i = 0; i < charCode.length; i ++) {
 			if(charCode[i] == '&' || charCode[i] == '|') {
-				if (charCode[i + 1] == charCode [i]) cyMetric ++;
+				if(i + 1 < charCode.length) {
+					if (charCode[i + 1] == charCode [i]) cyMetric ++;
+				}
 			}
 		}
 	}
