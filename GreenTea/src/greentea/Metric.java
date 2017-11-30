@@ -22,6 +22,20 @@ public class Metric {
 		int count = code.length() - code.replace("\n", "").length();
 		return count + 1;
 	}
+	
+	static public int measureLOC(IMethod method) {
+		// T_S01
+		String code;
+		try {
+			code = method.getSource();
+			int count = code.length() - code.replace("\n", "").length();
+			return count + 1;
+		} catch (JavaModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
+	}
 
 	static public double measureHalstead(String projectName, String packageName, String className, String methodName) {
 		// T_S02
