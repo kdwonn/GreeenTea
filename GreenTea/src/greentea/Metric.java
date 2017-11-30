@@ -32,10 +32,10 @@ public class Metric {
 		return cyclomaticCal.getResult();
 	}
 
-	static public double measureMaintain(IMethod method) {
+	static public double measureMaintain(IMethod method, String projectName, String packageName, String className, String methodName) {
 		return Math.max(0, (171
 				- 5.2 * Math.log(Metric.measureHalstead(method))
-				- 0.23 * Metric.measureCyclomatic(method)
+				- 0.23 * Metric.measureCyclomatic(projectName, packageName, className, methodName)
 				- 16.2 * Math.log(Metric.measureLOC(method))
 				) * 100 / 171 );
 	}
@@ -50,7 +50,7 @@ public class Metric {
 		return mc.getResult();
 	}
 
-	class MartinCoupling {
+	static class MartinCoupling {
 		private int afferentCoupling;
 		private int efferentCoupling;
 		List<String> innerClassesName;
