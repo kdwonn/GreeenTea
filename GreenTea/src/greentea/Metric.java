@@ -6,6 +6,7 @@ import java.util.List;
 
 
 import org.eclipse.jdt.core.*;
+import org.eclipse.swtbot.swt.finder.utils.StringUtils;
 
 
 
@@ -15,9 +16,11 @@ public class Metric {
 
 	}
 
-	static public int measureLOC(IMethod method) {
+	static public int measureLOC(String projectName, String packageName, String className) {
 		// T_S01
-		return 0;
+		String code = ProjectAnalyser.getSourceCode(projectName, packageName, className);
+		int count = code.length() - code.replace("\n", "").length();
+		return count + 1;
 	}
 
 	static public double measureHalstead(String projectName, String packageName, String className, String methodName) {
