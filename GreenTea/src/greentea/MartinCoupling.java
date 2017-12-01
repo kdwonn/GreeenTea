@@ -97,7 +97,7 @@ public class MartinCoupling {
 		return efferentCoupling;
 	}
 
-	public int getResult() {
+	public int getInstability() {
 		if(afferentCoupling + efferentCoupling == 0) {
 			return 0;
 		}
@@ -161,6 +161,10 @@ public class MartinCoupling {
 			}
 		}
 		return result;
+	}
+	
+	public static int testInstability() {
+		
 	}
 }
 
