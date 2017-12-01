@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.core.*;
+
 public class MartinCoupling {
 	private int afferentCoupling;
 	private int efferentCoupling;
@@ -37,55 +39,12 @@ public class MartinCoupling {
 	private int CalcAfferentCoupling(String proj, String pckg) {
 		int result = 0;
 
-		List<String> packages = Arrays.asList(ProjectAnalyser.getPackageNames(proj));
-
-		for(String packs : packages) {
-			if(!packs.equals(pckg)) {
-				List<String> outerClasses = Arrays.asList(ProjectAnalyser.getClassNames(proj, packs));
-				for(String outer : outerClasses) {
-					String outersrc = removeComment(ProjectAnalyser.getSourceCode(proj, packs, outer));
-					for(String inner : innerClassesName) {
-						if(outersrc.matches("[^]*[^a-zA-Z0-9]"+inner+"[^a-zA-Z0-9][^]*")) {
-							result++;
-							break; 
-						}
-					}
-				}
-			}
-		}
 		return result;
 	}
 
 	private int CalcEfferentCoupling(String proj, String pckg) {
 		int result = 0;
 
-		for(String inner : innerClassesName) {
-			String innersrc = removeComment(ProjectAnalyser.getSourceCode(proj, pckg, inner));
-			for(String outer : outerClassesName) {
-				if(innersrc.matches("[^]*[^a-zA-Z0-9]"+outer+"[^a-zA-Z0-9][^]*")) {
-					result++;
-					break; 
-				}
-			}
-		}
-		return result;
-	}
-
-	private static String removeComment(String src) {
-		int idxMultiLineComment = src.trim().indexOf("/*");
-		int idxSingleLineComment = src.trim().indexOf("//");
-		String result = src;
-
-		while ((idxMultiLineComment == 0) || (idxSingleLineComment == 0)) {
-			if (idxMultiLineComment == 0) {
-				result = src.substring(src.indexOf("*/") + 2);
-			} else {
-				result = src.substring(src.indexOf('\n') + 1);
-			} 
-
-			idxMultiLineComment = src.trim().indexOf("/*");
-			idxSingleLineComment = src.trim().indexOf("//");
-		}
 		return result;
 	}
 
@@ -110,31 +69,7 @@ public class MartinCoupling {
 	 */
 	public static int testCalcAfferentCoupling() {
 		int result = 0;
-		List<String> innerClassesName = new ArrayList<String>();
-		innerClassesName.add("Bank");
 		
-		//List<String> packages = Arrays.asList(ProjectAnalyser.getPackageNames(proj));
-		List<String> packages = new ArrayList<String>();
-		packages.add("testexample");
-		packages.add("testexample.Bank");
-		
-		for(String packs : packages) {
-			if(!packs.equals("testexample.Bank")) {
-				//List<String> outerClasses = Arrays.asList(ProjectAnalyser.getClassNames(proj, packs));
-				List<String> outerClasses = new ArrayList<String>();
-				outerClasses.add("Account");
-				for(String outer : outerClasses) {
-					//String outersrc = removeComment(ProjectAnalyser.getSourceCode(proj, packs, outer));
-					String outersrc = MartinCoupling.removeComment(testResources.testoutersrc);
-					for(String inner : innerClassesName) {
-						if(outersrc.matches("[^]*[^a-zA-Z0-9]"+inner+"[^a-zA-Z0-9][^]*")) {
-							result++;
-							break; 
-						}
-					}
-				}
-			}
-		}
 		return result;
 	}
 	
@@ -145,21 +80,6 @@ public class MartinCoupling {
 	public static int testCalcEfferentCoupling() {
 		int result = 0;
 		
-		List<String> innerClassesName = new ArrayList<String>();
-		List<String> outerClassesName = new ArrayList<String>();
-		innerClassesName.add("Bank");
-		outerClassesName.add("Account");
-
-		for(String inner : innerClassesName) {
-			//String innersrc = removeComment(ProjectAnalyser.getSourceCode(proj, pckg, inner));
-			String innersrc = removeComment(testResources.testinnersrc);
-			for(String outer : outerClassesName) {
-				if(innersrc.matches("[^]*[^a-zA-Z0-9]"+outer+"[^a-zA-Z0-9][^]*")) {
-					result++;
-					break; 
-				}
-			}
-		}
 		return result;
 	}
 	
