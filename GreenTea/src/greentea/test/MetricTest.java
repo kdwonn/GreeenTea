@@ -6,6 +6,7 @@ import testexample.SimpleTest;
 import org.eclipse.jdt.core.*;
 
 import greentea.GreenTea;
+import greentea.MartinCoupling;
 import greentea.Metric;
 
 public class MetricTest {
@@ -16,9 +17,15 @@ public class MetricTest {
 	}
 	
 	@Test
-	public void MartinCouplingTest() {
+	public void MartinAfferentCouplingTest() {
+		double estimatedValue = 0;
+		assertEquals(estimatedValue, MartinCoupling.testCalcAfferentCoupling());
+	}
+	
+	@Test
+	public void MartinEfferentCouplingTest() {
 		double estimatedValue = 1;
-		assertEquals(estimatedValue, Metric.measureMartin("GreenTea", "testexample.Bank"));
+		assertEquals(estimatedValue, MartinCoupling.testCalcEfferentCoupling());
 	}
 	
 	@Test
