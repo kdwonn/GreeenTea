@@ -29,6 +29,12 @@ public class MetricTest {
 	}
 	
 	@Test
+	public void MartinInstabilityTest() {
+		double estimatedValue = 1;
+		assertEquals(estimatedValue, MartinCoupling.testInstability());
+	}
+	
+	@Test
 	public void HalsteadVolumeTest() {
 		double epsilon=0.00001;
 		double estimatedValue = 234.58;

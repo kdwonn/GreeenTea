@@ -163,8 +163,12 @@ public class MartinCoupling {
 		return result;
 	}
 	
-	public static int testInstability() {
-		
+	/*
+	 * Test Instability testexample.Bank with Account.java
+	 * Expected result = 1
+	 */
+	public static double testInstability() {
+		return testCalcEfferentCoupling() / (testCalcEfferentCoupling() + testCalcAfferentCoupling());
 	}
 }
 
