@@ -139,6 +139,24 @@ public class MartinCoupling {
 		}
 		return result;
 	}
+	
+	public static int testCalcEfferentCoupling() {
+		int result = 0;
+		
+		List<String> innerClassesName = new ArrayList<String>();
+		innerClassesName.add("Bank");
+
+		for(String inner : innerClassesName) {
+			String innersrc = removeComment(ProjectAnalyser.getSourceCode(proj, pckg, inner));
+			for(String outer : outerClassesName) {
+				if(innersrc.matches("[^]*[^a-zA-Z0-9]"+outer+"[^a-zA-Z0-9][^]*")) {
+					result++;
+					break; 
+				}
+			}
+		}
+		return result;
+	}
 }
 
 class testResources {
