@@ -61,9 +61,19 @@ public class Metric {
 		return 0;
 	}
 
-	static public int measureMartin(String proj, String pckg) {
+	static public int measureMartinAfferent(String proj, String pckg) {
 		MartinCoupling mc = new MartinCoupling(proj, pckg);
-		return mc.getResult();
+		return mc.getCa();
+	}
+	
+	static public int measureMartinEfferent(String proj, String pckg) {
+		MartinCoupling mc = new MartinCoupling(proj, pckg);
+		return mc.getCe();
+	}
+	
+	static public int measureMartinInstability(String proj, String pckg) {
+		MartinCoupling mc = new MartinCoupling(proj, pckg);
+		return mc.getInstability();
 	}
 }
 
