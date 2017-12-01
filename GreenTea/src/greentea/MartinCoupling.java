@@ -105,14 +105,12 @@ public class MartinCoupling {
 	}
 	
 	/*
-	 * Test testexample.Bank with Account.java
+	 * Test AfferentCoupling testexample.Bank with Account.java
 	 * Expected result = 0
 	 */
 	public static int testCalcAfferentCoupling() {
 		int result = 0;
 		List<String> innerClassesName = new ArrayList<String>();
-		
-		//precondition : innerClasses = "Bank"
 		innerClassesName.add("Bank");
 		
 		//List<String> packages = Arrays.asList(ProjectAnalyser.getPackageNames(proj));
@@ -140,14 +138,21 @@ public class MartinCoupling {
 		return result;
 	}
 	
+	/*
+	 * Test EfferentCoupling testexample.Bank with Account.java
+	 * Expected result = 1
+	 */
 	public static int testCalcEfferentCoupling() {
 		int result = 0;
 		
 		List<String> innerClassesName = new ArrayList<String>();
+		List<String> outerClassesName = new ArrayList<String>();
 		innerClassesName.add("Bank");
+		outerClassesName.add("Account");
 
 		for(String inner : innerClassesName) {
-			String innersrc = removeComment(ProjectAnalyser.getSourceCode(proj, pckg, inner));
+			//String innersrc = removeComment(ProjectAnalyser.getSourceCode(proj, pckg, inner));
+			String innersrc = removeComment(testResources.testinnersrc);
 			for(String outer : outerClassesName) {
 				if(innersrc.matches("[^]*[^a-zA-Z0-9]"+outer+"[^a-zA-Z0-9][^]*")) {
 					result++;
