@@ -103,8 +103,8 @@ public class Metric {
 			List<String> packages = Arrays.asList(ProjectAnalyser.getPackageNames(proj));
 
 			for(String packs : packages) {
-				List<String> outerClasses = Arrays.asList(ProjectAnalyser.getClassNames(proj, packs));
 				if(!packs.equals(pckg)) {
+					List<String> outerClasses = Arrays.asList(ProjectAnalyser.getClassNames(proj, packs));
 					for(String outer : outerClasses) {
 						String outersrc = removeComment(ProjectAnalyser.getSourceCode(proj, packs, outer));
 						for(String inner : innerClassesName) {
@@ -165,6 +165,43 @@ public class Metric {
 				return 0;
 			}
 			return efferentCoupling / (afferentCoupling + efferentCoupling);
+		}
+		
+		/*
+		 * Test testexample.Bank with Account.java 
+		 */
+		public static int testCalcAfferentCoupling() {
+			int result = 0;
+			String outersrc = new String();
+			List<String> innerClassesName = new ArrayList<String>();
+			
+			//precondition : innerClasses = "Bank"
+			innerClassesName.add("Bank");
+			outersrc = "";
+			
+			//List<String> packages = Arrays.asList(ProjectAnalyser.getPackageNames(proj));
+			List<String> packages = new ArrayList<String>();
+			packages.add("testexample");
+			packages.add("testexample.Bank");
+			
+			for(String packs : packages) {
+				if(!packs.equals("testexample.Bank")) {
+					//List<String> outerClasses = Arrays.asList(ProjectAnalyser.getClassNames(proj, packs));
+					List<String> outerClasses = new ArrayList<String>();
+					outerClasses.add("Account");
+					for(String outer : outerClasses) {
+						//String outersrc = removeComment(ProjectAnalyser.getSourceCode(proj, packs, outer));
+
+						for(String inner : innerClassesName) {
+							if(outersrc.matches("[^]*[^a-zA-Z0-9]"+inner+"[^a-zA-Z0-9][^]*")) {
+								result++;
+								break; 
+							}
+						}
+					}
+				}
+			}
+			return result;
 		}
 	}
 }
