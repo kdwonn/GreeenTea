@@ -1,15 +1,26 @@
 package greentea.test;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import testexample.SimpleTest;
 import org.eclipse.jdt.core.*;
+import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 
 import greentea.GreenTea;
 import greentea.MartinCoupling;
 import greentea.Metric;
 
 public class MetricTest {
+	
+	private static SWTWorkbenchBot bot;
+	
+	@BeforeClass
+	public static void beforeClass() throws Exception {
+		bot = new SWTWorkbenchBot();
+		bot.viewByTitle("Welcome").close();
+	}
+	
 	@Test
 	public void DhamaCouplingTest() {
 		double estimatedValue = 1/22;
