@@ -2,7 +2,9 @@ package greentea;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -10,7 +12,10 @@ import org.eclipse.jdt.core.*;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.core.search.IJavaSearchScope;
 import org.eclipse.jdt.core.search.SearchEngine;
+import org.eclipse.jdt.core.search.SearchMatch;
+import org.eclipse.jdt.core.search.SearchParticipant;
 import org.eclipse.jdt.core.search.SearchPattern;
+import org.eclipse.jdt.core.search.SearchRequestor;
 
 public class MartinCoupling {
 	private int afferentCoupling;
@@ -28,8 +33,8 @@ public class MartinCoupling {
 			}
 		}
 		
-		afferentCoupling = CalcAfferentCoupling(targetPackage, proj, pckg);
-		efferentCoupling = CalcEfferentCoupling(targetPackage, proj, pckg);
+		afferentCoupling = CalcAfferentCoupling(targetPackage);
+		efferentCoupling = CalcEfferentCoupling(targetPackage);
 		if(afferentCoupling + efferentCoupling == 0) {
 			instability = 0;
 		}
@@ -66,23 +71,26 @@ public class MartinCoupling {
 		return outerPackages;
 	}
 
-	private int CalcAfferentCoupling(IPackageFragment targetPackage, String proj, String pckg) {
+	private int CalcAfferentCoupling(IPackageFragment targetPackage) {
 		int result = 0;
 		
 		try {
 			SearchEngine searchEngine = new SearchEngine();
 			IJavaSearchScope scope = SearchEngine.createJavaSearchScope(getOuterPackages(targetPackage).toArray(new IJavaElement[] {}));
 			SearchPattern pattern = SearchPattern.createPattern(targetPackage, IJavaSearchConstants.REFERENCES);
-
+			AfferentRequestor requestor = new AfferentRequestor(targetPackage);
+			SearchParticipant[] participant = new SearchParticipant[] { SearchEngine.getDefaultSearchParticipant() };
+			searchEngine.search(pattern, participant, scope, requestor, null);
+			result = requestor.getResult();
 		} catch (CoreException e) {
 			e.printStackTrace();
+			result = -1;
 		}
-		
 		
 		return result;
 	}
 
-	private int CalcEfferentCoupling(IPackageFragment targetPackage, String proj, String pckg) {
+	private int CalcEfferentCoupling(IPackageFragment targetPackage) {
 		int result = 0;
 
 		return result;
@@ -126,6 +134,40 @@ public class MartinCoupling {
 	 */
 	public static double testInstability() {
 		return testCalcEfferentCoupling() / (testCalcEfferentCoupling() + testCalcAfferentCoupling());
+	}
+	
+	public static class AfferentRequestor extends SearchRequestor {
+		private int result = 0;
+		private IJavaSearchScope target;
+		private Set<String> results = null;
+		private Set<String> packages = null;
+
+		public AfferentRequestor(IPackageFragment targetPackage) {
+			target = SearchEngine.createJavaSearchScope(new IJavaElement[] { targetPackage });
+		}
+
+		public int getResult() {
+			return result;
+		}
+
+		@Override
+		public void beginReporting() {
+			results = new HashSet<String>();
+			packages = new HashSet<String>();
+		}
+
+		public void acceptSearchMatch(SearchMatch match) throws CoreException {
+			IJavaElement enclosingElement = (IJavaElement) match.getElement();
+			if ((enclosingElement != null) && (!target.encloses(enclosingElement))) {
+				IJavaElement pkg = enclosingElement.getAncestor(IJavaElement.PACKAGE_FRAGMENT);
+				results.add(match.getResource().getFullPath().toString());
+				packages.add(pkg.getElementName());
+			}
+		}
+		
+		public void endReporting() {
+			result = results.size();
+		}
 	}
 }
 
