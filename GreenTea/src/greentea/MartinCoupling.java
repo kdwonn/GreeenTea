@@ -9,40 +9,38 @@ import org.eclipse.jdt.core.*;
 public class MartinCoupling {
 	private int afferentCoupling;
 	private int efferentCoupling;
-	List<String> innerClassesName;
-	List<String> outerClassesName;
+	private double instability;
 
 	public MartinCoupling(String proj, String pckg) {
-		List<String> projects = Arrays.asList(ProjectAnalyser.getProjectNames());
-
-		if(!projects.contains(proj)) {
-			//exception
-		}
-
-		List<String> packages = Arrays.asList(ProjectAnalyser.getPackageNames(proj));
-
-		if(!packages.contains(pckg)) {
-			//exception
-		}
-
-		innerClassesName = Arrays.asList(ProjectAnalyser.getClassNames(proj, pckg));
-		outerClassesName = new ArrayList<String>();
-		for(String packs : packages) {
-			if(!packs.equals(pckg)) {
-				outerClassesName.addAll(Arrays.asList(ProjectAnalyser.getClassNames(proj, packs)));
+		
+		IPackageFragment targetPackage = null;
+		List<IPackageFragment> packages = Arrays.asList(ProjectAnalyser.getPackages(proj));
+		
+		for(IPackageFragment pack : packages) {
+			if(pack.getElementName().equals(pckg)) {
+				targetPackage = pack;
 			}
 		}
-		afferentCoupling = CalcAfferentCoupling(proj, pckg);
-		efferentCoupling = CalcEfferentCoupling(proj, pckg);
+		
+		afferentCoupling = CalcAfferentCoupling(targetPackage);
+		efferentCoupling = CalcEfferentCoupling(targetPackage);
+		if(afferentCoupling + efferentCoupling == 0) {
+			instability = 0;
+		}
+		else {
+			instability = efferentCoupling / (afferentCoupling + efferentCoupling);
+		}
 	}
 
-	private int CalcAfferentCoupling(String proj, String pckg) {
+	private int CalcAfferentCoupling(IPackageFragment targetPackage) {
 		int result = 0;
-
+		
+		
+		
 		return result;
 	}
 
-	private int CalcEfferentCoupling(String proj, String pckg) {
+	private int CalcEfferentCoupling(IPackageFragment targetPackage) {
 		int result = 0;
 
 		return result;
@@ -56,11 +54,8 @@ public class MartinCoupling {
 		return efferentCoupling;
 	}
 
-	public int getInstability() {
-		if(afferentCoupling + efferentCoupling == 0) {
-			return 0;
-		}
-		return efferentCoupling / (afferentCoupling + efferentCoupling);
+	public double getInstability() {
+		return instability;
 	}
 	
 	/*

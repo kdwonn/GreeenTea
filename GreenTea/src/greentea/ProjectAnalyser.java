@@ -100,7 +100,7 @@ public class ProjectAnalyser {
 	}
 	
 	
-	private static IJavaProject[] getProjects() {
+	public static IJavaProject[] getProjects() {
 		IProject[] projects =  ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		List<IJavaProject> projectList = new LinkedList<IJavaProject>();
 		for(IProject prj : projects) {
@@ -112,7 +112,7 @@ public class ProjectAnalyser {
 		return projectList.toArray(new IJavaProject[] {});
 	}
 	
-	private static IPackageFragment[] getPackages(String projectName) {
+	public static IPackageFragment[] getPackages(String projectName) {
 		IJavaProject[] projects = getProjects();
 		IJavaProject objectProject = null;
 		for(IJavaProject prj : projects) {

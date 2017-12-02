@@ -71,7 +71,7 @@ public class Metric {
 		return mc.getCe();
 	}
 	
-	static public int measureMartinInstability(String proj, String pckg) {
+	static public double measureMartinInstability(String proj, String pckg) {
 		MartinCoupling mc = new MartinCoupling(proj, pckg);
 		return mc.getInstability();
 	}
