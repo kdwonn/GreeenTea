@@ -6,6 +6,7 @@ import static org.junit.Assume.*;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.JavaModelException;
 import org.junit.Test;
 
 public class AnalyserTest {
@@ -27,10 +28,15 @@ public class AnalyserTest {
 		org.junit.Assume.assumeNotNull(packageNames);
 		
 		IJavaProject[] projects = greentea.ProjectAnalyser.getProjects();
-		for (IPackageFragment frag : projects[0].getPackageFragments()) {
-			if(frag.getElementName().equals(packageNames[0])) {
-				assertNotNull(frag.getCompilationUnit(classNames[0]));
+		try {
+			for (IPackageFragment frag : projects[0].getPackageFragments()) {
+				if(frag.getElementName().equals(packageNames[0])) {
+					assertNotNull(frag.getCompilationUnit(classNames[0]));
+				}
 			}
+		} catch (JavaModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

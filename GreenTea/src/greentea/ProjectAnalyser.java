@@ -100,7 +100,7 @@ public class ProjectAnalyser {
 	}
 	
 	
-	private static IJavaProject[] getProjects() {
+	public static IJavaProject[] getProjects() {
 		IProject[] projects =  ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		List<IJavaProject> projectList = new LinkedList<IJavaProject>();
 		for(IProject prj : projects) {
