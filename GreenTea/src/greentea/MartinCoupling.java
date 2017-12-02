@@ -4,7 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.*;
+import org.eclipse.jdt.core.search.IJavaSearchConstants;
+import org.eclipse.jdt.core.search.IJavaSearchScope;
+import org.eclipse.jdt.core.search.SearchEngine;
+import org.eclipse.jdt.core.search.SearchPattern;
 
 public class MartinCoupling {
 	private int afferentCoupling;
@@ -22,8 +28,8 @@ public class MartinCoupling {
 			}
 		}
 		
-		afferentCoupling = CalcAfferentCoupling(targetPackage);
-		efferentCoupling = CalcEfferentCoupling(targetPackage);
+		afferentCoupling = CalcAfferentCoupling(targetPackage, proj, pckg);
+		efferentCoupling = CalcEfferentCoupling(targetPackage, proj, pckg);
 		if(afferentCoupling + efferentCoupling == 0) {
 			instability = 0;
 		}
@@ -31,16 +37,52 @@ public class MartinCoupling {
 			instability = efferentCoupling / (afferentCoupling + efferentCoupling);
 		}
 	}
+	
+	private void addPackagetoScope(IJavaProject proj, List<IPackageFragment> scope) throws JavaModelException {
+		List<IPackageFragment> packages = Arrays.asList(proj.getPackageFragments());
+		for(IPackageFragment pack : packages) {
+			if(pack.getKind() != IPackageFragmentRoot.K_BINARY) {
+				scope.add(pack);
+			}
+		}
+	}
+	
+	private List<IPackageFragment> getOuterPackages(IPackageFragment pckg) throws JavaModelException {
+		IJavaProject rootProject = (IJavaProject) pckg.getAncestor(IJavaElement.JAVA_PROJECT);
+		List<IPackageFragment> outerPackages = new ArrayList<IPackageFragment>();
+		
+		addPackagetoScope(rootProject, outerPackages);
+		
+		IProject[] reference = rootProject.getProject().getReferencingProjects();
+		if((reference != null) && (reference.length > 0)) {
+			for (IProject ref : reference) {
+				IJavaProject next = JavaCore.create(ref);
+				if(next != null) {
+					addPackagetoScope(next, outerPackages);
+				}
+			}
+		}
+		outerPackages.remove(pckg);
+		return outerPackages;
+	}
 
-	private int CalcAfferentCoupling(IPackageFragment targetPackage) {
+	private int CalcAfferentCoupling(IPackageFragment targetPackage, String proj, String pckg) {
 		int result = 0;
 		
+		try {
+			SearchEngine searchEngine = new SearchEngine();
+			IJavaSearchScope scope = SearchEngine.createJavaSearchScope(getOuterPackages(targetPackage).toArray(new IJavaElement[] {}));
+			SearchPattern pattern = SearchPattern.createPattern(targetPackage, IJavaSearchConstants.REFERENCES);
+
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
 		
 		
 		return result;
 	}
 
-	private int CalcEfferentCoupling(IPackageFragment targetPackage) {
+	private int CalcEfferentCoupling(IPackageFragment targetPackage, String proj, String pckg) {
 		int result = 0;
 
 		return result;
