@@ -1,5 +1,9 @@
 package greentea;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import org.eclipse.jdt.core.IMethod;
 
 import net.steppschuh.markdowngenerator.table.Table;
@@ -27,5 +31,17 @@ public class ReportGenerator {
 		
 		sb = sb.append(tableBuilder.build()).append("\n");
 		return sb.toString();
+	}
+	
+	public void generateReport(String filename) {
+		try {
+			File file = new File(filename) ;
+			FileWriter fw = new FileWriter(file, true);
+	        fw.write(generateMarkdownString());
+	        fw.flush();
+	        fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
