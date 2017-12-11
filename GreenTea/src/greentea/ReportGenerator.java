@@ -10,7 +10,7 @@ import net.steppschuh.markdowngenerator.table.Table;
 import net.steppschuh.markdowngenerator.text.heading.Heading;
 
 public class ReportGenerator {
-	public String generateMarkdownString() {
+	public static String generateMarkdownString() {
 		StringBuilder sb = new StringBuilder().append(new Heading("Metric Report", 1)).append("\n");
 		
 		Table.Builder tableBuilder = new Table.Builder().withAlignment(Table.ALIGN_LEFT);
@@ -33,7 +33,7 @@ public class ReportGenerator {
 		return sb.toString();
 	}
 	
-	public void generateReport(String filename) {
+	public static void generateReport(String filename) {
 		try {
 			File file = new File(filename) ;
 			FileWriter fw = new FileWriter(file, true);
