@@ -22,7 +22,7 @@ public class MetricTest {
 				+"\n}"
 				+"\n}";
 		boolean isSame=Math.abs(estimatedValue-Metric.measureHalsteadWithSource(testSource, "main"))<epsilon;
-		assertEquals(false,isSame);
+		assertEquals(true,isSame);
 	}
 	
 	@Test
