@@ -246,7 +246,7 @@ public class TreeViewer {
 					break;
 				case 4:
 					if(path.getType() == GTPath.PACKAGE)
-						result = "1";//String.valueOf(Metric.measureMartin(projectName, packageName));
+						result = String.valueOf(Metric.measureMartinInstability(projectName, packageName));
 					break;
 				case 5:
 					if(path.getType() == GTPath.METHOD) {
