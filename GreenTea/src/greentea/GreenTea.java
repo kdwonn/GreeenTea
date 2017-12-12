@@ -18,6 +18,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -47,11 +48,14 @@ public class GreenTea {
 	@PostConstruct
 	public void createPartControl(Composite parent) {
 		Composite comp = new Composite(parent, SWT.NONE);
-		comp.setLayout(new FillLayout());
-        comp.setLayout(new GridLayout(2, false));
-        comp.setSize(100, 80);
+		GridLayout gl = new GridLayout(2, false);
+        comp.setLayout(gl);
+        
 		Button tutorialBtn = new Button(comp, SWT.PUSH);
 		tutorialBtn.setText("Tutorial");
+		
+		Button reportBtn = new Button(comp, SWT.NONE);
+		reportBtn.setText("Report");
 
 		treeViewer = new TreeViewer(parent);
 		viewer = treeViewer.getViewer();
@@ -74,7 +78,6 @@ public class GreenTea {
 				Bundle bundle = Platform.getBundle("GreenTea");
 				try {
 					URL eclipseURL = FileLocator.find(bundle, new Path("res/tutorial.md"), null);
-					File bbb = FileLocator.getBundleFile(bundle);
 					URL fileURL = FileLocator.toFileURL(eclipseURL);
 					File file = new File(FileLocator.resolve(fileURL).toURI());
 
@@ -85,6 +88,34 @@ public class GreenTea {
 					e1.printStackTrace();
 				}
 			}
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+	    	
+	    });
+	    
+	    reportBtn.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				String reportName = "metric_report.md";
+				greentea.ReportGenerator.generateReport(reportName);
+				
+				Bundle bundle = Platform.getBundle("GreenTea");
+				try {
+					URL eclipseURL = FileLocator.find(bundle, new Path(reportName), null);
+					URL fileURL = FileLocator.toFileURL(eclipseURL);
+					File file = new File(FileLocator.resolve(fileURL).toURI());
+
+					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+					IDE.openEditor(page, file.toURI(), "org.eclipse.mylyn.wikitext.ui.editor.markupEditor", true);
+				} catch (IOException | URISyntaxException | PartInitException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
 	    	
