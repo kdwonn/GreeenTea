@@ -1,11 +1,14 @@
 package greentea;
 
 
+import java.awt.peer.LabelPeer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -17,6 +20,10 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaProject;
@@ -27,19 +34,30 @@ import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.text.edits.TextEdit;
+import org.eclipse.ui.IInPlaceEditor;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -119,7 +137,7 @@ public class Real_update {
 			return method.getElementName();
 		}
 	}
-	private class contentProvider implements ITreeContentProvider{
+	public class contentProvider implements ITreeContentProvider{
 		@Override
 		public Object[] getElements(Object inputElement) {
 			return ((componentModel) inputElement).children.toArray();
@@ -158,15 +176,15 @@ public class Real_update {
 			Bundle bundle = FrameworkUtil.getBundle(labelProvider.class);
 			
 			if(element instanceof projectComp)
-				path = "icons/folder.png";
+				path = "res/icons/project.png";
 			else if(element instanceof packageComp)
-				path = "icons/package.png";
+				path = "res/icons/project.png";
 			else if(element instanceof sourceComp)
-				path = "icons/file.png";
+				path = "res/icons/Orange.png";
 			else if(element instanceof fieldComp)
-				path = "icons/bullet_pink.png";
+				path = "res/icons/Red.png";
 			else if(element instanceof methodComp)
-				path = "icons/bullet_green.png";
+				path = "res/icons/green.png";
 			
 			URL url = FileLocator.find(bundle, new Path(path), null);
 			ImageDescriptor preImg = ImageDescriptor.createFromURL(url);
@@ -175,12 +193,12 @@ public class Real_update {
 	}
 	private IWorkspace workSpace;
 	private IProject[] projects;
-	private componentModel treeComponent;
+	public componentModel treeComponent;
 	private List<projectComp> projectComps;
 	private List<packageComp> packageComps;
 	private List<sourceComp> sourceComps;
 	private List<componentModel> terminalComps;
-	private TreeViewer treeV;
+	public TreeViewer treeV;
 	
 	public Real_update() {
 		// TODO Auto-generated constructor stub
@@ -258,90 +276,89 @@ public class Real_update {
         treeV.setInput(treeComponent);
         return;
 	}
-	@PostConstruct
-	public void createPartControl(Composite parent) {
-		IResourceChangeListener listener = new IResourceChangeListener() {
-		      public void resourceChanged(IResourceChangeEvent event) {
-		    	 update();
-		    	 Display.getDefault().asyncExec(new Runnable() {
-		    		 public void run() {
-				         treeUpdate(treeComponent);
-		    		 }
-		    	 });
-		      }
-		   };
-		update();
-		treeV = new TreeViewer(parent, SWT.H_SCROLL|SWT.V_SCROLL);
-		treeV.setContentProvider(new contentProvider());
-		treeV.setLabelProvider(new labelProvider());
-		treeV.setInput(treeComponent);
-		treeV.addDoubleClickListener(new IDoubleClickListener() {
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				// TODO Auto-generated method stub
-				IStructuredSelection target = (IStructuredSelection) event.getSelection();
-				componentModel targetObject = (componentModel) target.getFirstElement();
-				if(targetObject == null)
-					return;
-				if(targetObject instanceof fieldComp || 
-				   targetObject instanceof methodComp) {
-					ICompilationUnit icu = ((sourceComp)targetObject.parent).classFile;
-					ISourceRange range = null;
-					if(targetObject instanceof fieldComp) {
-						try {
-							range = ((fieldComp)targetObject).field.getSourceRange();
-						} catch (JavaModelException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+	public void updating(Composite parent)
+	{
+		
+			IResourceChangeListener listener = new IResourceChangeListener() {
+			      public void resourceChanged(IResourceChangeEvent event) {
+			    	 update();
+			    	 Display.getDefault().asyncExec(new Runnable() {
+			    		 public void run() {
+					         treeUpdate(treeComponent);
+			    		 }
+			    	 });
+			      }
+			   };
+			update();
+			treeV = new TreeViewer(parent, SWT.H_SCROLL|SWT.V_SCROLL);
+			treeV.setContentProvider(new contentProvider());
+			treeV.setLabelProvider(new labelProvider());
+			treeV.setInput(treeComponent);
+			treeV.addDoubleClickListener(new IDoubleClickListener() {
+				@Override
+				public void doubleClick(DoubleClickEvent event) {
+					// TODO Auto-generated method stub
+					IStructuredSelection target = (IStructuredSelection) event.getSelection();
+					componentModel targetObject = (componentModel) target.getFirstElement();
+					if(targetObject == null)
+						return;
+					if(targetObject instanceof fieldComp || 
+					   targetObject instanceof methodComp) {
+						ICompilationUnit icu = ((sourceComp)targetObject.parent).classFile;
+						ISourceRange range = null;
+						if(targetObject instanceof fieldComp) {
+							try {
+								range = ((fieldComp)targetObject).field.getSourceRange();
+							} catch (JavaModelException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
 						}
-					}
-					else if(targetObject instanceof methodComp) {
-						try {
-							range = ((methodComp)targetObject).method.getSourceRange();
-						} catch (JavaModelException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+						else if(targetObject instanceof methodComp) {
+							try {
+								range = ((methodComp)targetObject).method.getSourceRange();
+							} catch (JavaModelException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
 						}
-					}
-					IFile sourceFile = null;
-					try {
-						IResource sourceRe = icu.getUnderlyingResource();
-						if(sourceRe.getType() == IResource.FILE) {
-							sourceFile = (IFile) sourceRe;
-						}
-					} catch (JavaModelException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-					if(sourceFile != null && 
-							range != null) {
-						IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-						ITextEditor textEdit = null;
+						IFile sourceFile = null;
 						try {
-							textEdit = (ITextEditor)IDE.openEditor(page, sourceFile);
-						} catch (PartInitException e) {
+							IResource sourceRe = icu.getUnderlyingResource();
+							if(sourceRe.getType() == IResource.FILE) {
+								sourceFile = (IFile) sourceRe;
+							}
+						} catch (JavaModelException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						if(textEdit != null)
-							textEdit.selectAndReveal(range.getOffset(), range.getLength());
-					}
-				}
-				else {
-					TreeViewer tv = (TreeViewer)event.getSource();
-					if(tv.getExpandedState(targetObject)) {
-						tv.collapseToLevel(targetObject, AbstractTreeViewer.ALL_LEVELS);
+						
+						if(sourceFile != null && 
+								range != null) {
+							IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+							ITextEditor textEdit = null;
+							try {
+								textEdit = (ITextEditor)IDE.openEditor(page, sourceFile);
+							} catch (PartInitException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							if(textEdit != null)
+								textEdit.selectAndReveal(range.getOffset(), range.getLength());
+						}
 					}
 					else {
-						tv.expandToLevel(targetObject, 1);
+						TreeViewer tv = (TreeViewer)event.getSource();
+						if(tv.getExpandedState(targetObject)) {
+							tv.collapseToLevel(targetObject, AbstractTreeViewer.ALL_LEVELS);
+						}
+						else {
+							tv.expandToLevel(targetObject, 1);
+						}
 					}
 				}
-			}
-		});
-		workSpace.addResourceChangeListener(listener);
-		
+			});
+			workSpace.addResourceChangeListener(listener);
+			
+		}
 	}
-
-	
-}

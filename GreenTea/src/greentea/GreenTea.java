@@ -1,32 +1,18 @@
 package greentea;
 
-import java.io.File;
-import java.net.URL;
-
 import javax.annotation.PostConstruct;
 
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.jdt.core.*;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
-import org.eclipse.jface.resource.ResourceManager;
-import org.eclipse.jface.viewers.*;
-import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GreenTea {
-	private TreeViewer treeViewer;
+	private TTreeViewer treeViewer;
 	private org.eclipse.jface.viewers.TreeViewer viewer;
+	private Real_update updateViewer;
+	
 
 	/*
 	 * composite parent -> separate to some area and only left area used for treeviewrcol.
@@ -34,9 +20,13 @@ public class GreenTea {
 	 */
 	@PostConstruct
 	public void createPartControl(Composite parent) {
-		treeViewer = new TreeViewer(parent);
+		treeViewer = new TTreeViewer(parent);
 		viewer = treeViewer.getViewer();
-
+		updateViewer = new Real_update();
+		
+		updateViewer.updating(parent);
+		
+			
 	    viewer.addDoubleClickListener(new IDoubleClickListener() {
         	@Override
             public void doubleClick(DoubleClickEvent event) {
@@ -47,6 +37,7 @@ public class GreenTea {
             }
         });
         
+	    
 	}
 
 	@Focus
