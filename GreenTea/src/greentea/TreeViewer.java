@@ -256,6 +256,7 @@ public class TreeViewer {
 						IMethod method = ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);
 						result = String.valueOf(Metric.measureMaintain(method, projectName, packageName, className, methodName));
 					}
+					break;
 				case 99: //For test
 					result = String.valueOf(viewer.getTree().getColumnCount());
 					break;
