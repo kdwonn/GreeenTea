@@ -48,6 +48,10 @@ public class Metric {
 		CyclomaticComplexity cyclomaticCal = new CyclomaticComplexity(projectName, packageName, className, methodName);
 		return cyclomaticCal.getResult();
 	}
+	static public int measureCyclomaticWithSource(String source, String methodName) {
+		CyclomaticComplexity cyclomaticCal = new CyclomaticComplexity(source, methodName);
+		return cyclomaticCal.getResult();
+	}
 
 	static public double measureMaintain(IMethod method, String projectName, String packageName, String className, String methodName) {
 		return Math.max(0, (171

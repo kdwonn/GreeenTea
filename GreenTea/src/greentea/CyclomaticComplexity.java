@@ -30,25 +30,31 @@ public class CyclomaticComplexity {
 	String classSource_;
 	char[] classSource;
 	
+	public CyclomaticComplexity(String testSource, String methodName) {
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		classSource_ = testSource;
+		classSource = classSource_.toCharArray();
+		
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setSource(classSource);
+		parser.setResolveBindings(true);
+		
+		MethodVisitor methodVisitor = new MethodVisitor();
+		
+		classRepresent = (CompilationUnit)parser.createAST(null);
+		classRepresent.accept(methodVisitor);
+		
+		for(MethodDeclaration temp : methodVisitor.getMethods()) {
+			if(methodName.equals(temp.getName().toString())) {
+				methodRepresent = temp;
+				break;
+			}
+		}
+	}
 	public CyclomaticComplexity(String projectName, String packageName, String className, String methodName) {
 		// TODO Auto-generated constructor stub
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		//classSource_ = ProjectAnalyser.getSourceCode(projectName, packageName, className);
-		classSource_ = 
-		"\n public class SimpleTest { "
-		+"\n 	public SimpleTest () { "
-		+"\n 		int a = 3; "
-		+"\n 		int b = 2; "
-		+"\n 		System.out.print(a+b); "
-		+"\n 	} " 	
-		+"\n 	public void cycle() { "
-		+"\n 		for(int i = 0; i < 3; i++) { "
-		+"\n 			if(i > 1) { "
-		+"\n 				System.out.print(1); "
-		+"\n 			} "
-		+"\n 		} "
-		+"\n 	} // 32, 20 "
-		+"\n } ";
+		classSource_ = ProjectAnalyser.getSourceCode(projectName, packageName, className);
 		classSource = classSource_.toCharArray();
 		
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);

@@ -32,7 +32,22 @@ public class MetricTest {
 	@Test
 	public void CyclomaticComplexTest() {
 		double estimatedValue = 3;
-		assertEquals(true, estimatedValue == Metric.measureCyclomatic("GreenTea", "testexample", "SimpleTest", "cycle"));
+		String testSource = 
+				"\n public class SimpleTest { "
+				+"\n 	public SimpleTest () { "
+				+"\n 		int a = 3; "
+				+"\n 		int b = 2; "
+				+"\n 		System.out.print(a+b); "
+				+"\n 	} " 	
+				+"\n 	public void cycle() { "
+				+"\n 		for(int i = 0; i < 3; i++) { "
+				+"\n 			if(i > 1) { "
+				+"\n 				System.out.print(1); "
+				+"\n 			} "
+				+"\n 		} "
+				+"\n 	} // 32, 20 "
+				+"\n } ";
+		assertEquals(true, estimatedValue == Metric.measureCyclomaticWithSource(testSource, "cycle"));
 	}
 	@Test
 	public void MaintainIndexTest() {
