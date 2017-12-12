@@ -4,7 +4,7 @@ package testexample;
  *  This class contains the information needed to represent an account.
  *  Account should have information such as owner's name, account number and balance. 
  */
-abstract class Account {
+public abstract class Account {
 	int accountNumber;
 	protected double balance;
 	String owner;
@@ -27,14 +27,14 @@ abstract class Account {
 	 *  
 	 *  @param elapsedDate elapsed date
 	 */
-	abstract void updateBalance(int elapsedDate);
+	public abstract void updateBalance(int elapsedDate);
 	
 	/**
 	 *  Returns the account balance.
 	 *  
 	 *  @return the balance
 	 */
-	double getBalance() {
+	public double getBalance() {
 		return balance;
 	}
 
@@ -44,7 +44,7 @@ abstract class Account {
 	 *  
 	 *  @param amount deposit amount
 	 */
-	void deposit(double amount) {
+	public void deposit(double amount) {
 		balance += amount;
 		//음수인 경우 고려X
 	}
@@ -57,7 +57,7 @@ abstract class Account {
 	 *  
 	 *  @param amount withdraw amount 
 	 */
-	void withdraw(double amount) throws NegativeException {
+	public void withdraw(double amount) throws NegativeException {
 		if (balance < amount ) {
 			throw new NegativeException();
 		}
