@@ -14,7 +14,11 @@ public class Metric {
 	public Metric() {
 
 	}
-
+	static public int measureLOC(String code) {
+		// T_S01
+		int count = code.length() - code.replace("\n", "").length();
+		return count + 1;
+	}
 	static public int measureLOC(String projectName, String packageName, String className) {
 		// T_S01
 		String code = ProjectAnalyser.getSourceCode(projectName, packageName, className);
@@ -62,6 +66,14 @@ public class Metric {
 				- 16.2 * Math.log(Metric.measureLOC(method))
 				) * 100 / 171 );
 	}
+	static public double measureMaintainWithSource(String source, String methodName) {
+		return Math.max(0, (171
+				- 5.2 * Math.log(Metric.measureHalsteadWithSource(source, methodName))
+				- 0.23 * Metric.measureCyclomaticWithSource(source, methodName)
+				- 16.2 * Math.log(Metric.measureLOC(source))
+				) * 100 / 171 );
+	}
+
 
 	static public int measureDhama() {
 		// to T_S04
