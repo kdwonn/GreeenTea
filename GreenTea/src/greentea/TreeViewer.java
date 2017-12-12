@@ -235,6 +235,9 @@ public class TreeViewer {
 						IMethod method = ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);
 						result = String.valueOf(Metric.measureLOC(method));
 					}
+					else if(path.getType() == GTPath.CLASS) {
+						result = String.valueOf(Metric.measureLOC(projectName, packageName, className));
+					}
 					break;
 				case 2:
 					if(path.getType() == GTPath.METHOD)
@@ -246,7 +249,7 @@ public class TreeViewer {
 					break;
 				case 4:
 					if(path.getType() == GTPath.PACKAGE)
-						result = "1";//String.valueOf(Metric.measureMartin(projectName, packageName));
+						String.valueOf(Metric.measureMartinInstability(projectName, packageName));
 					break;
 				case 5:
 					if(path.getType() == GTPath.METHOD) {
