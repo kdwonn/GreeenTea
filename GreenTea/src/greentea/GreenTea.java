@@ -47,14 +47,15 @@ public class GreenTea {
 	 */
 	@PostConstruct
 	public void createPartControl(Composite parent) {
-		Composite comp = new Composite(parent, SWT.NONE);
-		GridLayout gl = new GridLayout(2, false);
-        comp.setLayout(gl);
-        
-		Button tutorialBtn = new Button(comp, SWT.PUSH);
+//		Composite comp = new Composite(parent, SWT.NONE);
+//		GridLayout gl = new GridLayout(2, false);
+//        comp.setLayout(gl);
+		parent.setLayout(new GridLayout(1, false));
+//        
+		Button tutorialBtn = new Button(parent, SWT.PUSH);
 		tutorialBtn.setText("Tutorial");
 		
-		Button reportBtn = new Button(comp, SWT.NONE);
+		Button reportBtn = new Button(parent, SWT.NONE);
 		reportBtn.setText("Report");
 
 		treeViewer = new TreeViewer(parent);
