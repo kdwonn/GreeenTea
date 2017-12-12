@@ -227,12 +227,14 @@ public class TreeViewer {
 				className = path.getClassName();
 				methodName = path.getMethodName();
 
-				IMethod method = ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);
+				//IMethod method = ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);
 
 				switch(index) {
 				case 1:
-					if(path.getType() == GTPath.METHOD)
+					if(path.getType() == GTPath.METHOD) {
+						IMethod method = ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);
 						result = String.valueOf(Metric.measureLOC(method));
+					}
 					break;
 				case 2:
 					if(path.getType() == GTPath.METHOD)
@@ -244,11 +246,13 @@ public class TreeViewer {
 					break;
 				case 4:
 					if(path.getType() == GTPath.PACKAGE)
-						result = String.valueOf(Metric.measureMartin(projectName, packageName));
+						result = "1";//String.valueOf(Metric.measureMartin(projectName, packageName));
 					break;
 				case 5:
-					if(path.getType() == GTPath.METHOD)
+					if(path.getType() == GTPath.METHOD) {
+						IMethod method = ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);
 						result = String.valueOf(Metric.measureMaintain(method, projectName, packageName, className, methodName));
+					}
 				case 99: //For test
 					result = String.valueOf(viewer.getTree().getColumnCount());
 					break;

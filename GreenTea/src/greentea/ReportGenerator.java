@@ -25,7 +25,7 @@ public class ReportGenerator {
 								String.valueOf(Metric.measureLOC(method)),
 								String.valueOf(Metric.measureHalstead(projectName, packageName, className, methodName)),
 								String.valueOf(Metric.measureCyclomatic(projectName, packageName, className, methodName)),
-								String.valueOf(Metric.measureMartin(projectName, packageName)),
+								//String.valueOf(Metric.measureMartin(method, projectName, packageName, className, methodName)),
 								String.valueOf(Metric.measureMaintain(method, projectName, packageName, className, methodName)));
 					}
 		
