@@ -1,19 +1,7 @@
 package greentea.test;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import testexample.SimpleTest;
-import org.eclipse.jdt.core.*;
-import org.eclipse.jface.preference.IntegerFieldEditor;
-import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
-
-import greentea.GreenTea;
-import greentea.MartinCoupling;
 import greentea.Metric;
 
 public class MetricTest {
