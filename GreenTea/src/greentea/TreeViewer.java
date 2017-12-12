@@ -236,7 +236,7 @@ public class TreeViewer {
 					break;
 				case 2:
 					if(path.getType() == GTPath.METHOD)
-						result = String.valueOf(Metric.measureHalstead(method));
+						result = String.valueOf(Metric.measureHalstead(projectName, packageName, className, methodName));
 					break;
 				case 3:
 					if(path.getType() == GTPath.METHOD)

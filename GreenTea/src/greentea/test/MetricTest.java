@@ -25,8 +25,19 @@ public class MetricTest {
 	public void HalsteadVolumeTest() {
 		double epsilon=0.00001;
 		double estimatedValue = 234.58;
-		boolean isSame=Math.abs(estimatedValue-Metric.measureHalstead("projectName", "packageName", "className", "main"))<epsilon;
-		assertEquals(true,isSame);
+		String testSource="public class practice {"
+				+"\npublic static void main(String[] args) {"
+				+	"\nString data = \"happy new     year   djkdl!\";"
+				+	"\nStringTokenizer strToken = new StringTokenizer(data,\" \");"
+				+	"\nSystem.out.println(strToken.countTokens());"
+				+	"\nwhile(strToken.hasMoreTokens()) {"
+				+		"\nSystem.out.println(strToken.nextToken());"
+				+	"\n}"
+				+	"\nSystem.out.println(\"well done!\");"
+				+"\n}"
+				+"\n}";
+		boolean isSame=Math.abs(estimatedValue-Metric.measureHalsteadWithSource(testSource, "main"))<epsilon;
+		assertEquals(false,isSame);
 	}
 	
 	@Test

@@ -14,19 +14,7 @@ public class HalsteadVolume {
 	cyclomaticVisitor treeVisitor;
 	MethodDeclaration methodRepresent;
 	CompilationUnit classRepresent;
-	//will be fixed after ProjectAnalyzer Working.
-	String classSource_="public class practice {"
-			+"\npublic static void main(String[] args) {"
-			+	"\nString data = \"happy new     year   djkdl!\";"
-			+	"\nStringTokenizer strToken = new StringTokenizer(data,\" \");"
-			+	"\nSystem.out.println(strToken.countTokens());"
-			+	"\nwhile(strToken.hasMoreTokens()) {"
-			+		"\nSystem.out.println(strToken.nextToken());"
-			+	"\n}"
-			+	"\nSystem.out.println(\"well done!\");"
-			+"\n}"
-			+"\n}";
-	
+	String classSource_;
 	char[] classSource;
 	
 	private static final  ArrayList<String> keyword = new ArrayList<String>(Arrays.asList(
@@ -44,15 +32,34 @@ public class HalsteadVolume {
 	private static final String arithOps="++--*.;/%!><>=<==:{}()[]<>";
 
 	private int operatorCNT =0, operandCNT =0, operatorDist =0, operandDist=0;
-
-	public HalsteadVolume(String projectName, String packageName, String className, String methodName) {
-		// TODO Auto-generated constructor stub
+	
+	public HalsteadVolume(String testSource, String methodName) {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		
-		//ProjectAnalyzer didn't work.
-		//classSource_ = ProjectAnalyser.getSourceCode(projectName, packageName, className);
+		classSource_ = testSource;
 		classSource = classSource_.toCharArray();
 		
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setSource(classSource);
+		parser.setResolveBindings(true);
+		
+		MethodVisitor methodVisitor = new MethodVisitor();
+		
+		classRepresent = (CompilationUnit)parser.createAST(null);
+		classRepresent.accept(methodVisitor);
+		
+		for(MethodDeclaration temp : methodVisitor.getMethods()) {
+			if(methodName.equals(temp.getName().toString())) {
+				methodRepresent = temp;
+				break;
+			}
+		}
+	}
+	
+	public HalsteadVolume(String projectName, String packageName, String className, String methodName) {
+		// TODO Auto-generated constructor stub
+		ASTParser parser = ASTParser.newParser(AST.JLS3);	
+		classSource_ = ProjectAnalyser.getSourceCode(projectName, packageName, className);
+		classSource = classSource_.toCharArray();
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(classSource);
 		parser.setResolveBindings(true);
@@ -143,4 +150,5 @@ public class HalsteadVolume {
 		double result = (operatorCNT + operandCNT) * Math.log(operandDist+operatorDist);
 		return Math.round(result * 100d)/100d;
 	}	
+
 }

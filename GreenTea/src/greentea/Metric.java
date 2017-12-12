@@ -42,7 +42,10 @@ public class Metric {
 		HalsteadVolume hals = new HalsteadVolume(projectName, packageName, className, methodName);
 		return hals.getResult();
 	}
-
+	static public int measureHalsteadWithSource(String source, String methodName) {
+		CyclomaticComplexity cyclomaticCal = new CyclomaticComplexity(source, methodName);
+		return cyclomaticCal.getResult();
+	}
 	static public int measureCyclomatic(String projectName, String packageName, String className, String methodName) {
 		// to T_S03
 		CyclomaticComplexity cyclomaticCal = new CyclomaticComplexity(projectName, packageName, className, methodName);
