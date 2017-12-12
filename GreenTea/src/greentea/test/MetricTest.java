@@ -1,5 +1,6 @@
 package greentea.test;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -17,6 +18,7 @@ import greentea.Metric;
 public class MetricTest {
 	
 	private static SWTWorkbenchBot bot;
+	private	static MartinCoupling mc;
 	
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -32,35 +34,46 @@ public class MetricTest {
       	bot.button("Open").click();
 		
 		bot.menu("File").menu("Open Projects from File System...").click();
-//		SWTBotShell shell = bot.shell("Import Projects from File System or Archive");
-//		shell.activate();
-		//bot.textWithLabel("Import source:").setText("C:\\Users\\SAMSUNG\\Documents\\GitHub\\GreenTea\\GreenTea");
-		bot.text(0).setText("C:\\Users\\SAMSUNG\\Documents\\GitHub\\GreenTea\\GreenTea");
+		bot.comboBox(0).setText("C:\\Users\\SAMSUNG\\Documents\\GitHub\\GreenTea\\GreenTea");
 		bot.button("Finish").click();
+		
+		mc = new MartinCoupling("GreenTea", "testexample.Bank");
+	}
+	
+	@AfterClass
+	public static void afterClass() {
+		bot.sleep(2000);
+		bot.resetWorkbench();
 	}
 	
 	@Test
 	public void DhamaCouplingTest() {
 		double estimatedValue = 1/22;
-		assertEquals(estimatedValue, Metric.measureDhama());
+		//assertEquals(estimatedValue, Metric.measureDhama());
 	}
 	
 	@Test
 	public void MartinAfferentCouplingTest() {
 		double estimatedValue = 0;
-		//assertEquals(estimatedValue, MartinCoupling.testCalcAfferentCoupling());
+		double epsilon=0.00001;
+		boolean isSame=Math.abs(estimatedValue-mc.getCa())<epsilon;
+		assertEquals(true,isSame);
 	}
 	
 	@Test
 	public void MartinEfferentCouplingTest() {
 		double estimatedValue = 1;
-		//assertEquals(estimatedValue, MartinCoupling.testCalcEfferentCoupling());
+		double epsilon=0.00001;
+		boolean isSame=Math.abs(estimatedValue-mc.getCe())<epsilon;
+		assertEquals(true,isSame);
 	}
 	
 	@Test
 	public void MartinInstabilityTest() {
 		double estimatedValue = 1;
-		//assertEquals(estimatedValue, MartinCoupling.testInstability());
+		double epsilon=0.00001;
+		boolean isSame=Math.abs(estimatedValue-mc.getInstability())<epsilon;
+		assertEquals(true,isSame);
 	}
 	
 	@Test
