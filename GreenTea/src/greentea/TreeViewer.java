@@ -249,13 +249,14 @@ public class TreeViewer {
 					break;
 				case 4:
 					if(path.getType() == GTPath.PACKAGE)
-						String.valueOf(Metric.measureMartinInstability(projectName, packageName));
+						result = String.valueOf(Metric.measureMartinInstability(projectName, packageName));
 					break;
 				case 5:
 					if(path.getType() == GTPath.METHOD) {
 						IMethod method = ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);
 						result = String.valueOf(Metric.measureMaintain(method, projectName, packageName, className, methodName));
 					}
+					break;
 				case 99: //For test
 					result = String.valueOf(viewer.getTree().getColumnCount());
 					break;
