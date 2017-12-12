@@ -7,20 +7,19 @@ import java.io.File;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import greentea.Metric;
+
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class UiTest {
 	private static SWTWorkbenchBot bot;
-	@BeforeClass
-	public static void initBot() {
-		// init swtbot
-		bot = new SWTWorkbenchBot();
-		bot.viewByTitle("Welcome").close();
-	}
 
 	@AfterClass
 	public static void afterClass() {
@@ -28,6 +27,50 @@ public class UiTest {
 		bot.resetWorkbench();
 	}
 	
+	@BeforeClass
+	public static void beforeClass() throws Exception {
+		bot = new SWTWorkbenchBot();
+		bot.viewByTitle("Welcome").close();
+		
+		bot.menu("Window").menu("Show View", "Other...").click();
+		SWTBotShell showView = bot.shell("Show View");
+        showView.activate();
+        SWTBotTree tree = bot.tree();
+        SWTBotTreeItem node = tree.expandNode("Green Tea");
+        node.select("Green Tea");
+      	bot.button("Open").click();
+		
+		bot.menu("File").menu("Open Projects from File System...").click();
+//		SWTBotShell shell = bot.shell("Import Projects from File System or Archive");
+//		shell.activate();
+		//bot.textWithLabel("Import source:").setText("C:\\Users\\SAMSUNG\\Documents\\GitHub\\GreenTea\\GreenTea");
+		bot.text(0).setText("C:\\Users\\SAMSUNG\\Documents\\GitHub\\GreenTea\\GreenTea");
+		bot.button("Finish").click();
+	}
+	
+	@Test
+	public void DhamaCouplingTest() {
+		double estimatedValue = 1/22;
+		assertEquals(estimatedValue, Metric.measureDhama());
+	}
+	
+	@Test
+	public void MartinAfferentCouplingTest() {
+		double estimatedValue = 0;
+		//assertEquals(estimatedValue, MartinCoupling.testCalcAfferentCoupling());
+	}
+	
+	@Test
+	public void MartinEfferentCouplingTest() {
+		double estimatedValue = 1;
+		//assertEquals(estimatedValue, MartinCoupling.testCalcEfferentCoupling());
+	}
+	
+	@Test
+	public void MartinInstabilityTest() {
+		double estimatedValue = 1;
+		//assertEquals(estimatedValue, MartinCoupling.testInstability());
+	}
 	/*
 	 * Test case for checking tutorial open button
 	 * Tutorial open button is placed in the toolbar of this plugin.
