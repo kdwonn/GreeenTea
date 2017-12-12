@@ -15,17 +15,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import greentea.MartinCoupling;
 import greentea.Metric;
 
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class UiTest {
 	private static SWTWorkbenchBot bot;
-
-	@AfterClass
-	public static void afterClass() {
-		bot.sleep(2000);
-		bot.resetWorkbench();
-	}
+	private	static MartinCoupling mc;
 	
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -41,11 +37,16 @@ public class UiTest {
       	bot.button("Open").click();
 		
 		bot.menu("File").menu("Open Projects from File System...").click();
-//		SWTBotShell shell = bot.shell("Import Projects from File System or Archive");
-//		shell.activate();
-		//bot.textWithLabel("Import source:").setText("C:\\Users\\SAMSUNG\\Documents\\GitHub\\GreenTea\\GreenTea");
-		bot.text(0).setText("C:\\Users\\SAMSUNG\\Documents\\GitHub\\GreenTea\\GreenTea");
+		bot.comboBox(0).setText("C:\\Users\\SAMSUNG\\Documents\\GitHub\\GreenTea\\GreenTea");
 		bot.button("Finish").click();
+		
+		mc = new MartinCoupling("GreenTea", "testexample.Bank");
+	}
+	
+	@AfterClass
+	public static void afterClass() {
+		bot.sleep(2000);
+		bot.resetWorkbench();
 	}
 	
 	@Test
@@ -57,19 +58,25 @@ public class UiTest {
 	@Test
 	public void MartinAfferentCouplingTest() {
 		double estimatedValue = 0;
-		//assertEquals(estimatedValue, MartinCoupling.testCalcAfferentCoupling());
+		double epsilon=0.00001;
+		boolean isSame=Math.abs(estimatedValue-mc.getCa())<epsilon;
+		assertEquals(true,isSame);
 	}
 	
 	@Test
 	public void MartinEfferentCouplingTest() {
 		double estimatedValue = 1;
-		//assertEquals(estimatedValue, MartinCoupling.testCalcEfferentCoupling());
+		double epsilon=0.00001;
+		boolean isSame=Math.abs(estimatedValue-mc.getCe())<epsilon;
+		assertEquals(true,isSame);
 	}
 	
 	@Test
 	public void MartinInstabilityTest() {
 		double estimatedValue = 1;
-		//assertEquals(estimatedValue, MartinCoupling.testInstability());
+		double epsilon=0.00001;
+		boolean isSame=Math.abs(estimatedValue-mc.getInstability())<epsilon;
+		assertEquals(true,isSame);
 	}
 	/*
 	 * Test case for checking tutorial open button
