@@ -1,6 +1,8 @@
-package testexample;
+package testexample.Bank;
 
 import java.util.Map;
+
+import testexample.*;
 import java.util.HashMap;
 import java.util.Collection;
 

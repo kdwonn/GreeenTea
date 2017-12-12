@@ -5,7 +5,7 @@ package testexample;
  *  For example, assume someone puts 100 dollars in his compound interest account.
  *  Then, after 10 days, the balance of the account will be 100*(1.01)^10.
  */
-class CompoundInterest extends Account {
+public class CompoundInterest extends Account {
 	final static double interest = 0.01;
 	
 	/**
@@ -15,7 +15,7 @@ class CompoundInterest extends Account {
 	 *  @param name the name of account owner
      *  @param initial initial balance when an account is created	  
 	 */
-	CompoundInterest(int newNumber, String name, double initial) {
+	public CompoundInterest(int newNumber, String name, double initial) {
 		super(newNumber, name, initial);
 	}
 	
@@ -24,7 +24,7 @@ class CompoundInterest extends Account {
 	 *  
 	 *  @param elapsedDate elapsed date
 	 */
-	void updateBalance(int elapsedDate) {
+	public void updateBalance(int elapsedDate) {
 		super.balance *= Math.pow((1 + interest),elapsedDate);
 	}
 }

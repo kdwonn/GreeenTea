@@ -8,8 +8,7 @@ import java.util.List;
 import org.eclipse.jdt.core.*;
 import org.eclipse.swtbot.swt.finder.utils.StringUtils;
 
-
-
+import testexample.NegativeException;
 
 public class Metric {
 	public Metric() {
@@ -69,110 +68,19 @@ public class Metric {
 		return 0;
 	}
 
-	static public int measureMartin(String proj, String pckg) {
+	static public int measureMartinAfferent(String proj, String pckg) {
 		MartinCoupling mc = new MartinCoupling(proj, pckg);
-		return mc.getResult();
+		return mc.getCa();
 	}
-
-	static class MartinCoupling {
-		private int afferentCoupling;
-		private int efferentCoupling;
-		List<String> innerClassesName;
-		List<String> outerClassesName;
-
-		public MartinCoupling(String proj, String pckg) {
-			List<String> projects = Arrays.asList(ProjectAnalyser.getProjectNames());
-
-			if(!projects.contains(proj)) {
-				//exception
-			}
-
-			List<String> packages = Arrays.asList(ProjectAnalyser.getPackageNames(proj));
-
-			if(!packages.contains(pckg)) {
-				//exception
-			}
-
-			innerClassesName = Arrays.asList(ProjectAnalyser.getClassNames(proj, pckg));
-			outerClassesName = new ArrayList<String>();
-			for(String packs : packages) {
-				if(!packs.equals(pckg)) {
-					outerClassesName.addAll(Arrays.asList(ProjectAnalyser.getClassNames(proj, packs)));
-				}
-			}
-			afferentCoupling = CalcAfferentCoupling(proj, pckg);
-			efferentCoupling = CalcEfferentCoupling(proj, pckg);
-		}
-
-		private int CalcAfferentCoupling(String proj, String pckg) {
-			int result = 0;
-
-			List<String> packages = Arrays.asList(ProjectAnalyser.getPackageNames(proj));
-
-			for(String packs : packages) {
-				List<String> outerClasses = Arrays.asList(ProjectAnalyser.getClassNames(proj, packs));
-				if(!packs.equals(pckg)) {
-					for(String outer : outerClasses) {
-						String outersrc = removeComment(ProjectAnalyser.getSourceCode(proj, packs, outer));
-						for(String inner : innerClassesName) {
-							if(outersrc.matches("[^]*[^a-zA-Z0-9]"+inner+"[^a-zA-Z0-9][^]*")) {
-								result++;
-								break; 
-							}
-						}
-					}
-				}
-			}
-			return result;
-		}
-
-		private int CalcEfferentCoupling(String proj, String pckg) {
-			int result = 0;
-
-			for(String inner : innerClassesName) {
-				String innersrc = removeComment(ProjectAnalyser.getSourceCode(proj, pckg, inner));
-				for(String outer : outerClassesName) {
-					if(innersrc.matches("[^]*[^a-zA-Z0-9]"+outer+"[^a-zA-Z0-9][^]*")) {
-						result++;
-						break; 
-					}
-				}
-			}
-			return result;
-		}
-
-		private String removeComment(String src) {
-			int idxMultiLineComment = src.trim().indexOf("/*");
-			int idxSingleLineComment = src.trim().indexOf("//");
-			String result = src;
-
-			while ((idxMultiLineComment == 0) || (idxSingleLineComment == 0)) {
-				if (idxMultiLineComment == 0) {
-					result = src.substring(src.indexOf("*/") + 2);
-				} else {
-					result = src.substring(src.indexOf('\n') + 1);
-				} 
-
-				idxMultiLineComment = src.trim().indexOf("/*");
-				idxSingleLineComment = src.trim().indexOf("//");
-			}
-			return result;
-		}
-
-		public int getCa() {
-			return afferentCoupling;
-		}
-
-		public int getCe() {
-			return efferentCoupling;
-		}
-
-		public int getResult() {
-			if(afferentCoupling + efferentCoupling == 0) {
-				return 0;
-			}
-			return efferentCoupling / (afferentCoupling + efferentCoupling);
-		}
+	
+	static public int measureMartinEfferent(String proj, String pckg) {
+		MartinCoupling mc = new MartinCoupling(proj, pckg);
+		return mc.getCe();
+	}
+	
+	static public double measureMartinInstability(String proj, String pckg) {
+		MartinCoupling mc = new MartinCoupling(proj, pckg);
+		return mc.getInstability();
 	}
 }
 

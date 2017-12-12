@@ -1,6 +1,6 @@
 package testexample;
 
-class EmptyException extends Exception{
+public class EmptyException extends Exception{
 	public EmptyException() {
 		super("No such account found.");
 	}

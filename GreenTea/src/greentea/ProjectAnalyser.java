@@ -112,7 +112,7 @@ public class ProjectAnalyser {
 		return projectList.toArray(new IJavaProject[] {});
 	}
 	
-	private static IPackageFragment[] getPackages(String projectName) {
+	public static IPackageFragment[] getPackages(String projectName) {
 		IJavaProject[] projects = getProjects();
 		IJavaProject objectProject = null;
 		for(IJavaProject prj : projects) {
