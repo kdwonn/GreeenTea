@@ -17,6 +17,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPage;
@@ -44,6 +46,13 @@ public class GreenTea {
 	 */
 	@PostConstruct
 	public void createPartControl(Composite parent) {
+		Composite comp = new Composite(parent, SWT.NONE);
+		comp.setLayout(new FillLayout());
+        comp.setLayout(new GridLayout(2, false));
+        comp.setSize(100, 80);
+		Button tutorialBtn = new Button(comp, SWT.PUSH);
+		tutorialBtn.setText("Tutorial");
+
 		treeViewer = new TreeViewer(parent);
 		viewer = treeViewer.getViewer();
 
@@ -56,14 +65,12 @@ public class GreenTea {
                 viewer.setExpandedState(selectedNode,!viewer.getExpandedState(selectedNode));
             }
         });
-	    Button button1 = new Button(parent, SWT.PUSH);
-	    button1.setText("ddd");
-	    button1.addSelectionListener(new SelectionListener() {
-
+	    
+	    
+	    tutorialBtn.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
-				System.out.println("asdf");
 				Bundle bundle = Platform.getBundle("GreenTea");
 				try {
 					URL eclipseURL = FileLocator.find(bundle, new Path("res/tutorial.md"), null);
@@ -72,22 +79,17 @@ public class GreenTea {
 					File file = new File(FileLocator.resolve(fileURL).toURI());
 
 					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-					IDE.openEditor(page, file.toURI(), "org.eclipse.ui.DefaultTextEditor", true);
+					IDE.openEditor(page, file.toURI(), "org.eclipse.mylyn.wikitext.ui.editor.markupEditor", true);
 				} catch (IOException | URISyntaxException | PartInitException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
-
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("fdsa");
-			}
+			public void widgetDefaultSelected(SelectionEvent e) {}
 	    	
 	    });
 	    
-        
 	}
 
 	@Focus
