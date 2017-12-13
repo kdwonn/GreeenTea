@@ -182,11 +182,11 @@ public class TreeViewer {
 
 		public ViewLabelProvider() {
 			String path1, path2, path3, path4;
-			Bundle bundle = FrameworkUtil.getBundle(LabelProvider.class);
+			Bundle bundle = FrameworkUtil.getBundle(ViewLabelProvider.class);
 			path1 = "res/icons/project.png";
-			path2 = "res/icons/project.png";
-			path3 = "res/icons/project.png";
-			path4 = "res/icons/project.png";
+			path2 = "res/icons/Project.png";
+			path3 = "res/icons/Red.png";
+			path4 = "res/icons/green.png";
 			
 			URL url = FileLocator.find(bundle, new Path(path1), null);
 			img1 = ImageDescriptor.createFromURL(url);
