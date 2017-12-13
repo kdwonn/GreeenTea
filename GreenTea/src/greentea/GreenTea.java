@@ -101,16 +101,15 @@ public class GreenTea {
 				// TODO Auto-generated method stub
 				String reportName = "metric_report.md";
 				greentea.ReportGenerator.generateReport(reportName);
+				greentea.Logging.writeLog();
 				
 				Bundle bundle = Platform.getBundle("GreenTea");
 				try {
-					URL eclipseURL = FileLocator.find(bundle, new Path(reportName), null);
-					URL fileURL = FileLocator.toFileURL(eclipseURL);
-					File file = new File(FileLocator.resolve(fileURL).toURI());
+					File file = new File(reportName);
 
 					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 					IDE.openEditor(page, file.toURI(), "org.eclipse.mylyn.wikitext.ui.editor.markupEditor", true);
-				} catch (IOException | URISyntaxException | PartInitException e1) {
+				} catch ( PartInitException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
