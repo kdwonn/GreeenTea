@@ -14,7 +14,7 @@ public class ReportGenerator {
 		StringBuilder sb = new StringBuilder().append("Metric Report").append("\n").append("====================").append("\n");
 		
 		String table = "| Name | Lines of Code | Halstead Volume | Cyclomatec Complexity | Martin's Coupling | Maintainablity Index |\n";
-		table = table += "| ------- | ------- | ------- | ------- | ------- | ------- |\n";
+		table = table += "| ---- | ------------- | --------------- | --------------------- | ----------------- | -------------------- |\n";
 		
 		for(String projectName:ProjectAnalyser.getProjectNames())
 			for(String packageName:ProjectAnalyser.getPackageNames(projectName)) {
