@@ -166,6 +166,8 @@ class cyclomaticVisitor extends ASTVisitor{
 		return true;
 	}
 	public void findConditionOperator(Expression codeBody) {
+		if(codeBody == null || code == null) return;
+		
 		int startIdx = codeBody.getStartPosition();
 		char[] charCode = code.substring(startIdx, startIdx + codeBody.getLength()).toCharArray();
 		for(int i = 0; i < charCode.length; i ++) {

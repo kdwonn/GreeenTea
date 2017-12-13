@@ -28,6 +28,7 @@ public class MetricTest {
 	@Test
 	public void CyclomaticComplexTest() {
 		double estimatedValue = 3;
+		double estimatedValue2 = 9;
 		String testSource = 
 				"\n public class SimpleTest { "
 				+"\n 	public SimpleTest () { "
@@ -43,11 +44,46 @@ public class MetricTest {
 				+"\n 		} "
 				+"\n 	} // 32, 20 "
 				+"\n } ";
+		String testSource2 = 
+				"public class SimpleTest {"
+				+"\n public static IPackageFragment[] getPackages(String projectName) {                    " 
+				+"\n		IJavaProject[] projects = getProjects(); " 
+				+"\n		IJavaProject objectProject = null; " 
+				+"\n		for(IJavaProject prj : projects) { " 
+				+"\n			if(prj.getElementName().equals(projectName)) { " 
+				+"\n				objectProject = prj; " 
+				+"\n				break; " 
+				+"\n			} " 
+				+"\n		} " 
+				+"\n		if(objectProject == null) { " 
+				+"\n			return null;		 " 
+				+"\n		} " 
+				+"\n		IPackageFragmentRoot[] packageRoots; " 
+				+"\n		try { " 
+				+"\n			packageRoots = objectProject.getPackageFragmentRoots(); " 
+				+"\n			List<IPackageFragment> fragmentList = new LinkedList<IPackageFragment>(); " 
+				+"\n			for(IPackageFragmentRoot packRoot : packageRoots) { " 
+				+"\n				if(packRoot instanceof JarPackageFragmentRoot) continue; " 
+				+"\n	            IJavaElement[] fragments = packRoot.getChildren(); " 
+				+"\n	            for(IJavaElement fragJE : fragments) { " 
+				+"\n	            	IPackageFragment frag = (IPackageFragment)fragJE; " 
+				+"\n	            	if(frag.getElementName().isEmpty()) continue; " 
+				+"\n	            	fragmentList.add(frag); " 
+				+"\n	            } " 
+				+"\n			} " 
+				+"\n			return fragmentList.toArray(new IPackageFragment[] {}); " 
+				+"\n		} catch (CoreException e) { " 
+				+"\n			e.printStackTrace(); " 
+				+"\n			return null; " 
+				+"\n		} " 
+				+"\n	} " 
+				+"\n}" ;
 		assertEquals(true, estimatedValue == Metric.measureCyclomaticWithSource(testSource, "cycle"));
+		assertEquals(true, estimatedValue2 == Metric.measureCyclomaticWithSource(testSource2, "getPackages"));
 	}
 	@Test
 	public void MaintainIndexTest() {
-		double estimatedValue = 70.6;
+		double estimatedValue = 59.1;
 		String testSource = 
 				"\n public class SimpleTest { "
 				+"\n 	public SimpleTest () { "
