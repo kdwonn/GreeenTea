@@ -57,8 +57,7 @@ public class GreenTea {
 		//		Composite comp = new Composite(parent, SWT.NONE);
 		//		GridLayout gl = new GridLayout(2, false);
 		//        comp.setLayout(gl);
-		parent.setLayout(new GridLayout(2, false));
-		//        
+		parent.setLayout(new GridLayout(2, false)); 
 		Button tutorialBtn = new Button(parent, SWT.PUSH);
 		tutorialBtn.setText("Tutorial");
 
@@ -70,11 +69,7 @@ public class GreenTea {
 		
 		treeViewer = new TreeViewer(parent);
 		viewer = treeViewer.getViewer();
-		//((Control) viewer).setLayoutData(grid);
 		treeViewer.updating();
-		//updateViewer = new Real_update();
-
-		//updateViewer.updating(parent);
 
 
 
