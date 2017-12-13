@@ -14,7 +14,7 @@ public class ReportTest {
 	
 	@Test
 	public void testReportGenerated() {
-		String filename = "metricreport.md";
+		String filename = "metricReport.md";
 		File file = new File(filename);
 		
 		if(file.exists()) {

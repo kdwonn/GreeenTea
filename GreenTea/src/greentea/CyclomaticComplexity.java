@@ -15,6 +15,7 @@ import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -159,7 +160,14 @@ class cyclomaticVisitor extends ASTVisitor{
 		findConditionOperator(node.getExpression());
 		return true;
 	}
+	@Override
+	public boolean visit(ExpressionStatement node) {
+		findConditionOperator(node.getExpression());
+		return true;
+	}
 	public void findConditionOperator(Expression codeBody) {
+		if(codeBody == null || code == null) return;
+		
 		int startIdx = codeBody.getStartPosition();
 		char[] charCode = code.substring(startIdx, startIdx + codeBody.getLength()).toCharArray();
 		for(int i = 0; i < charCode.length; i ++) {
