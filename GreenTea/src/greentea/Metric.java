@@ -14,7 +14,11 @@ public class Metric {
 	public Metric() {
 
 	}
-
+	static public int measureLOC(String code) {
+		// T_S01
+		int count = code.length() - code.replace("\n", "").length();
+		return count + 1;
+	}
 	static public int measureLOC(String projectName, String packageName, String className) {
 		// T_S01
 		String code = ProjectAnalyser.getSourceCode(projectName, packageName, className);
@@ -41,9 +45,9 @@ public class Metric {
 		HalsteadVolume hals = new HalsteadVolume(projectName, packageName, className, methodName);
 		return hals.getResult();
 	}
-	static public int measureHalsteadWithSource(String source, String methodName) {
-		CyclomaticComplexity cyclomaticCal = new CyclomaticComplexity(source, methodName);
-		return cyclomaticCal.getResult();
+	static public double measureHalsteadWithSource(String source, String methodName) {
+		HalsteadVolume halsteadVolume = new HalsteadVolume(source, methodName);
+		return halsteadVolume.getResult();
 	}
 	static public int measureCyclomatic(String projectName, String packageName, String className, String methodName) {
 		// to T_S03
@@ -56,12 +60,22 @@ public class Metric {
 	}
 
 	static public double measureMaintain(IMethod method, String projectName, String packageName, String className, String methodName) {
-		return Math.max(0, (171
+		double result= Math.max(0, (171
 				- 5.2 * Math.log(Metric.measureHalstead(projectName, packageName, className, methodName))
 				- 0.23 * Metric.measureCyclomatic(projectName, packageName, className, methodName)
 				- 16.2 * Math.log(Metric.measureLOC(method))
 				) * 100 / 171 );
+		return Math.round(result * 100d)/100d;
 	}
+	static public double measureMaintainWithSource(String source, String methodName) {
+		double result= Math.max(0, (171
+				- 5.2 * Math.log(Metric.measureHalsteadWithSource(source, methodName))
+				- 0.23 * Metric.measureCyclomaticWithSource(source, methodName)
+				- 16.2 * Math.log(Metric.measureLOC(source))
+				) * 100 / 171 );
+		return Math.round(result * 100d)/100d;
+	}
+
 
 	static public int measureDhama() {
 		// to T_S04
