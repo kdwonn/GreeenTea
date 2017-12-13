@@ -49,3 +49,7 @@ local.properties
 .worksheet
 
 */screenshots/
+
+# Generated Report
+GreenTea/metricreport.md
+GreenTea/*.md
