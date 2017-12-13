@@ -17,11 +17,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 
-public class TTreeViewer {
+public class TreeViewer {
 	private org.eclipse.jface.viewers.TreeViewer viewer;
 
 
-	public TTreeViewer(Composite parent) {
+	public TreeViewer(Composite parent) {
 		FilteredTree filteredTree = new FilteredTree(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FILL, new GTPatternFilter(), true);
 		viewer = filteredTree.getViewer();		
 
