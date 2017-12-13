@@ -7,11 +7,14 @@ import java.net.URL;
 
 import javax.annotation.PostConstruct;
 
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.jdt.core.*;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -22,6 +25,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -40,6 +45,8 @@ import java.util.List;
 public class GreenTea {
 	private TreeViewer treeViewer;
 	private org.eclipse.jface.viewers.TreeViewer viewer;
+	//private Real_update updateViewer;
+	
 
 	/*
 	 * composite parent -> separate to some area and only left area used for treeviewrcol.
@@ -47,22 +54,33 @@ public class GreenTea {
 	 */
 	@PostConstruct
 	public void createPartControl(Composite parent) {
-//		Composite comp = new Composite(parent, SWT.NONE);
-//		GridLayout gl = new GridLayout(2, false);
-//        comp.setLayout(gl);
-		parent.setLayout(new GridLayout(1, false));
-//        
+		//		Composite comp = new Composite(parent, SWT.NONE);
+		//		GridLayout gl = new GridLayout(2, false);
+		//        comp.setLayout(gl);
+		parent.setLayout(new GridLayout(2, false));
+		//        
 		Button tutorialBtn = new Button(parent, SWT.PUSH);
 		tutorialBtn.setText("Tutorial");
-		
+
 		Button reportBtn = new Button(parent, SWT.NONE);
 		reportBtn.setText("Report");
 
+		GridData grid = new GridData();
+		grid.horizontalSpan = 2;
+		
 		treeViewer = new TreeViewer(parent);
 		viewer = treeViewer.getViewer();
+		//((Control) viewer).setLayoutData(grid);
+		treeViewer.updating();
+		//updateViewer = new Real_update();
 
-	    viewer.addDoubleClickListener(new IDoubleClickListener() {
-        	@Override
+		//updateViewer.updating(parent);
+
+
+
+
+		viewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
             public void doubleClick(DoubleClickEvent event) {
         		org.eclipse.jface.viewers.TreeViewer viewer = (org.eclipse.jface.viewers.TreeViewer) event.getViewer();
                 IStructuredSelection thisSelection = (IStructuredSelection) event.getSelection();
@@ -129,3 +147,4 @@ public class GreenTea {
 
 	}
 }
+
