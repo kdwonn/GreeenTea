@@ -93,13 +93,6 @@ T_S13
 * Units (Story Points): `2`
 * `Make log file by push 'Log' button. Log includes all metric value of classes and methods. This enables keeping track of progress in development.`
 
-T_S14
-
-* Title: `Generate program's Visual metric report`
-* Priority: `2`
-* Units (Story Points): `5`
-* `Draw visualized graph on metric report. Graph indicates benchmarks about judge program quality. (Ex: maintainability index graph have to indicate 20 line)`
-
 T_S15
 
 * Title: `Real time Update`
@@ -130,14 +123,7 @@ T_S18
 
 T_S19
 
-* Title: `State-indicating Icons
+* Title: `State-indicating Icons`
 * Priority : `3`
 * Units (Story Points): `3`
 * `The plugin does show the actual values of metrics, but the values themselves does not actually indicate how efficient the code is. Therefore, depending on whether each value of metric indicates a good/moderate/bad condition, it would be nice to have different icons representing the state of the metric values to enable the determination of the code's efficiency.`
-
-T_S20
-
-* Title: `DSQI (design structure quality index)`
-* Priority : `1`
-* Units (Story Points): `4`
-* `This metric measures the quality of design for the test codes. This uses the former DSQI method.`
