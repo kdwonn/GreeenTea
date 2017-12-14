@@ -96,5 +96,10 @@ public class Metric {
 		MartinCoupling mc = new MartinCoupling(proj, pckg);
 		return mc.getInstability();
 	}
+	
+	static public String mesureAbstractness(String projectName, String packageName) {
+		Abstractness abst = new Abstractness(projectName,packageName);
+		return abst.getResult();
+	}
 }
 
