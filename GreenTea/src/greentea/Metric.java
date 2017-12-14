@@ -81,7 +81,7 @@ public class Metric {
 		// to T_S04
 		DhamaCoupling dhama = new DhamaCoupling(projectName, packageName, className, methodName);
 		double result = dhama.getResult();
-		return Math.round(result * 100d)/100d;
+		return Math.round(result * 1000d)/1000d;
 	}
 
 	static public int measureMartinAfferent(String proj, String pckg) {

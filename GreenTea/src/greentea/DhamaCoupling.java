@@ -85,7 +85,7 @@ public class DhamaCoupling {
 		methodRepresent.accept(treeVisitor);
 		List<FieldDeclaration> fieldList = treeVisitor.getFields();
 		int publicref = getPublicFieldRef(iMethodRepresent, fieldList);
-		int below = publicref + ce + ca + param;
+		double below = publicref + ce + ca + param;
 		if(below == 0) return 1;
 		else return (1 / below);
 	}
