@@ -85,7 +85,9 @@ public class DhamaCoupling {
 		methodRepresent.accept(treeVisitor);
 		List<FieldDeclaration> fieldList = treeVisitor.getFields();
 		int publicref = getPublicFieldRef(iMethodRepresent, fieldList);
-		return (1 / publicref + ce + ca + param);
+		int below = publicref + ce + ca + param;
+		if(below == 0) return 1;
+		else return (1 / below);
 	}
 	
 	private int CalcAfferentCoupling(IMethod targetMethod, IPackageFragment currentPack) {
