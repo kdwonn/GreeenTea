@@ -4,14 +4,19 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -22,13 +27,17 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 
 public class TreeViewer {
+	@Inject
+	IWorkbench workbench;
 	private org.eclipse.jface.viewers.TreeViewer viewer;
 	private IWorkspace workSpace;
 
@@ -398,7 +407,49 @@ public class TreeViewer {
 		};
 		workSpace.addResourceChangeListener(listener);
 	}
-
+	public void click_area(DoubleClickEvent event)
+	{
+		IStructuredSelection selection = viewer.getStructuredSelection();
+		Object obj = selection.getFirstElement();
+		
+		if(obj ==null)
+			return;
+		if(obj instanceof GTPath)
+		{
+			GTPath tmp = (GTPath) obj;
+			String projectName, packageName, className, methodName;
+			projectName = tmp.projectName;
+			packageName = tmp.packageName;
+			className = tmp.className;
+			methodName = tmp.methodName;
+			
+			if(tmp.getType() == GTPath.PROJECT ||
+					tmp.getType() == GTPath.PACKAGE ||
+						tmp.getType() == GTPath.CLASS)
+			{
+				if(viewer.getExpandedState(obj)) {
+					viewer.collapseToLevel(obj, 1);
+				}else
+					viewer.expandToLevel(obj, 1);
+			}else
+				try {
+					ISourceRange sourceRange =null;
+					if(tmp.getType() == GTPath.METHOD) {
+						IMethod method = ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);  
+						sourceRange = method.getSourceRange();
+					}
+					IJavaElement area = (IJavaElement)ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);
+					JavaUI.openInEditor(area);
+					ITextEditor editor = (ITextEditor) workbench.getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+					editor.selectAndReveal(sourceRange.getOffset() , sourceRange.getLength());
+				}catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+		}
+		
+	}
+	
 	class GTPath {
 		static final int PROJECT = 1;
 		static final int PACKAGE = 2;

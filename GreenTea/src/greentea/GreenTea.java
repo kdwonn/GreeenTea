@@ -77,10 +77,11 @@ public class GreenTea {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
             public void doubleClick(DoubleClickEvent event) {
-        		org.eclipse.jface.viewers.TreeViewer viewer = (org.eclipse.jface.viewers.TreeViewer) event.getViewer();
-                IStructuredSelection thisSelection = (IStructuredSelection) event.getSelection();
-                Object selectedNode = thisSelection.getFirstElement();
-                viewer.setExpandedState(selectedNode,!viewer.getExpandedState(selectedNode));
+        		//org.eclipse.jface.viewers.TreeViewer viewer = (org.eclipse.jface.viewers.TreeViewer) event.getViewer();
+                //IStructuredSelection thisSelection = (IStructuredSelection) event.getSelection();
+                //Object selectedNode = thisSelection.getFirstElement();
+                //viewer.setExpandedState(selectedNode,!viewer.getExpandedState(selectedNode));
+				treeViewer.click_area(event);
             }
         });
 	    
