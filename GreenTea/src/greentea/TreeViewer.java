@@ -51,13 +51,13 @@ public class TreeViewer {
 
 		TreeViewerColumn metric1Column = new TreeViewerColumn(viewer, SWT.NONE);
 		metric1Column.getColumn().setText("Line of Code");
-		metric1Column.getColumn().setWidth(150);
+		metric1Column.getColumn().setWidth(100);
 		metric1Column.getColumn().setAlignment(SWT.RIGHT);
 		metric1Column.setLabelProvider(new MetricProvider(1));
 
 		TreeViewerColumn metric2Column = new TreeViewerColumn(viewer, SWT.NONE);
 		metric2Column.getColumn().setText("Halstead Volume");
-		metric2Column.getColumn().setWidth(150);
+		metric2Column.getColumn().setWidth(120);
 		metric2Column.getColumn().setAlignment(SWT.RIGHT);
 		metric2Column.setLabelProvider(new MetricProvider(2));
 
@@ -80,10 +80,18 @@ public class TreeViewer {
 		metric5Column.setLabelProvider(new MetricProvider(5));
 		
 		TreeViewerColumn metric6Column = new TreeViewerColumn(viewer, SWT.NONE);
-		metric6Column.getColumn().setText("Abstractness");
+		metric6Column.getColumn().setText("Dhama");
 		metric6Column.getColumn().setWidth(100);
 		metric6Column.getColumn().setAlignment(SWT.RIGHT);
 		metric6Column.setLabelProvider(new MetricProvider(6));
+		
+		TreeViewerColumn metric7Column = new TreeViewerColumn(viewer, SWT.NONE);
+		metric7Column.getColumn().setText("Abstractness");
+		metric7Column.getColumn().setWidth(100);
+		metric7Column.getColumn().setAlignment(SWT.RIGHT);
+		metric7Column.setLabelProvider(new MetricProvider(7));
+		
+		
 	}
 
 	public org.eclipse.jface.viewers.TreeViewer getViewer() {
@@ -314,6 +322,12 @@ public class TreeViewer {
 					break;
 
 				case 6:
+					if(path.getType() == GTPath.METHOD) {
+						result = String.valueOf(Metric.measureDhama(projectName, packageName, className, methodName));
+					}
+					break;
+					
+				case 7:
 					if(path.getType() == GTPath.PACKAGE) {
 						result = String.valueOf(Metric.mesureAbstractness(projectName, packageName));
 					}
