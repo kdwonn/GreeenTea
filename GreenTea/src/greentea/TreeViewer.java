@@ -78,6 +78,12 @@ public class TreeViewer {
 		metric5Column.getColumn().setWidth(150);
 		metric5Column.getColumn().setAlignment(SWT.RIGHT);
 		metric5Column.setLabelProvider(new MetricProvider(5));
+		
+		TreeViewerColumn metric6Column = new TreeViewerColumn(viewer, SWT.NONE);
+		metric6Column.getColumn().setText("Abstractness");
+		metric6Column.getColumn().setWidth(100);
+		metric6Column.getColumn().setAlignment(SWT.RIGHT);
+		metric6Column.setLabelProvider(new MetricProvider(6));
 	}
 
 	public org.eclipse.jface.viewers.TreeViewer getViewer() {
@@ -306,6 +312,13 @@ public class TreeViewer {
 						result = String.valueOf(Metric.measureMaintain(method, projectName, packageName, className, methodName));
 					}
 					break;
+
+				case 6:
+					if(path.getType() == GTPath.PACKAGE) {
+						result = String.valueOf(Metric.mesureAbstractness(projectName, packageName));
+					}
+					break;
+				
 				case 99: //For test
 					result = String.valueOf(viewer.getTree().getColumnCount());
 					break;
