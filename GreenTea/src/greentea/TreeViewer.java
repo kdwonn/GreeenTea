@@ -190,7 +190,7 @@ public class TreeViewer {
 			String path1, path2, path3, path4;
 			Bundle bundle = FrameworkUtil.getBundle(ViewLabelProvider.class);
 			path1 = "res/icons/project.png";
-			path2 = "res/icons/Project.png";
+			path2 = "res/icons/project.png";
 			path3 = "res/icons/Red.png";
 			path4 = "res/icons/green.png";
 			
@@ -229,13 +229,13 @@ public class TreeViewer {
 				if(tmp.getType() == GTPath.PROJECT) {
 					return getResourceManager().createImage(img1);
 				}
-				if(tmp.getType() == GTPath.PACKAGE) {
+				else if(tmp.getType() == GTPath.PACKAGE) {
 					return getResourceManager().createImage(img2);
 				}
-				if(tmp.getType() == GTPath.CLASS) {
+				else if(tmp.getType() == GTPath.CLASS) {
 					return getResourceManager().createImage(img3);
 				}
-				if(tmp.getType() == GTPath.METHOD) {
+				else if(tmp.getType() == GTPath.METHOD) {
 					return getResourceManager().createImage(img4);
 				}
 			}

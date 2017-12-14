@@ -43,7 +43,7 @@ public class MartinCoupling {
 		}
 	}
 	
-	private void addPackagetoScope(IJavaProject proj, List<IPackageFragment> scope) throws JavaModelException {
+	public static void addPackagetoScope(IJavaProject proj, List<IPackageFragment> scope) throws JavaModelException {
 		List<IPackageFragment> packages = Arrays.asList(proj.getPackageFragments());
 		for(IPackageFragment pack : packages) {
 			if(pack.getKind() != IPackageFragmentRoot.K_BINARY) {
@@ -52,7 +52,7 @@ public class MartinCoupling {
 		}
 	}
 	
-	private List<IPackageFragment> getOuterPackages(IPackageFragment pckg) throws JavaModelException {
+	public static List<IPackageFragment> getOuterPackages(IPackageFragment pckg) throws JavaModelException {
 		IJavaProject rootProject = (IJavaProject) pckg.getAncestor(IJavaElement.JAVA_PROJECT);
 		List<IPackageFragment> outerPackages = new ArrayList<IPackageFragment>();
 		
@@ -65,6 +65,7 @@ public class MartinCoupling {
 				if(next != null) {
 					addPackagetoScope(next, outerPackages);
 				}
+				
 			}
 		}
 		outerPackages.remove(pckg);
