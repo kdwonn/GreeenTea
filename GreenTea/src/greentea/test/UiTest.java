@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
@@ -14,6 +15,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.osgi.framework.Bundle;
 
 import greentea.MartinCoupling;
 import greentea.Metric;
@@ -35,9 +37,12 @@ public class UiTest {
         SWTBotTreeItem node = tree.expandNode("Green Tea");
         node.select("Green Tea");
       	bot.button("Open").click();
+      	
+      	Bundle bundle = Platform.getBundle("GreenTea");
+		String pluginPath = bundle.getLocation().replaceAll("reference:file:", "");
 		
 		bot.menu("File").menu("Open Projects from File System...").click();
-		bot.comboBox(0).setText("C:\\Users\\SAMSUNG\\Documents\\GitHub\\GreenTea\\GreenTea");
+		bot.comboBox(0).setText(pluginPath);
 		bot.button("Finish").click();
 		
 		mc = new MartinCoupling("GreenTea", "testexample.Bank");
@@ -84,16 +89,11 @@ public class UiTest {
 	 */ 
 	@Test 
 	public void testOpenTutorial() {
-		bot.menu("Window").menu("Show View").menu("Other...").click();
-		bot.tree().expandNode("Green Tea").getNode("Green Tea").select();
-		bot.button("Open").click();
+		bot.button("Tutorial").click();
 		
-		SWTBotView view = bot.viewByTitle("Green Tea");
-		assertEquals("Open Tutorial", view.getToolbarButtons().get(0).getToolTipText());
-		view.getToolbarButtons().get(0).click();
-		view.bot().toolbarButton().click();
+		assertEquals("tutorial.md", bot.activeEditor().getTitle());
 		
-		assertEquals("Tutorial", bot.activeView().getTitle());
+		bot.activeEditor().close();
 	}
 	
 	/*
