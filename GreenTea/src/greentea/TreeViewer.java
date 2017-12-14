@@ -1,8 +1,15 @@
 package greentea;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -14,14 +21,20 @@ import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelP
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+
 
 public class TreeViewer {
 	private org.eclipse.jface.viewers.TreeViewer viewer;
-
+	private IWorkspace workSpace;
 
 	public TreeViewer(Composite parent) {
+		workSpace = ResourcesPlugin.getWorkspace();
+		
 		FilteredTree filteredTree = new FilteredTree(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FILL, new GTPatternFilter(), true);
 		viewer = filteredTree.getViewer();		
 
@@ -65,12 +78,6 @@ public class TreeViewer {
 		metric5Column.getColumn().setWidth(150);
 		metric5Column.getColumn().setAlignment(SWT.RIGHT);
 		metric5Column.setLabelProvider(new MetricProvider(5));
-		
-		TreeViewerColumn metric6Column = new TreeViewerColumn(viewer, SWT.NONE);
-		metric6Column.getColumn().setText("Abstractness");
-		metric6Column.getColumn().setWidth(100);
-		metric6Column.getColumn().setAlignment(SWT.RIGHT);
-		metric6Column.setLabelProvider(new MetricProvider(6));
 	}
 
 	public org.eclipse.jface.viewers.TreeViewer getViewer() {
@@ -78,6 +85,7 @@ public class TreeViewer {
 	}
 
 	class ViewContentProvider implements ITreeContentProvider {
+		@Override
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
 		}
 
@@ -166,11 +174,28 @@ public class TreeViewer {
 
 	//TODO
 	class ViewLabelProvider extends ColumnLabelProvider implements IStyledLabelProvider {
-		private ImageDescriptor directoryImage;
+		private ImageDescriptor img1;
+		private ImageDescriptor img2;
+		private ImageDescriptor img3;
+		private ImageDescriptor img4;
 		private ResourceManager resourceManager;
 
 		public ViewLabelProvider() {
-
+			String path1, path2, path3, path4;
+			Bundle bundle = FrameworkUtil.getBundle(ViewLabelProvider.class);
+			path1 = "res/icons/project.png";
+			path2 = "res/icons/Project.png";
+			path3 = "res/icons/Red.png";
+			path4 = "res/icons/green.png";
+			
+			URL url = FileLocator.find(bundle, new Path(path1), null);
+			img1 = ImageDescriptor.createFromURL(url);
+			url = FileLocator.find(bundle, new Path(path2), null);
+			img2 = ImageDescriptor.createFromURL(url);
+			url = FileLocator.find(bundle, new Path(path3), null);
+			img3 = ImageDescriptor.createFromURL(url);
+			url = FileLocator.find(bundle, new Path(path4), null);
+			img4 = ImageDescriptor.createFromURL(url);
 		}
 
 		@Override
@@ -192,6 +217,24 @@ public class TreeViewer {
 
 		@Override
 		public Image getImage(Object element) {
+			
+			if(element instanceof GTPath) {
+				GTPath tmp = (GTPath)element;
+				if(tmp.getType() == GTPath.PROJECT) {
+					return getResourceManager().createImage(img1);
+				}
+				if(tmp.getType() == GTPath.PACKAGE) {
+					return getResourceManager().createImage(img2);
+				}
+				if(tmp.getType() == GTPath.CLASS) {
+					return getResourceManager().createImage(img3);
+				}
+				if(tmp.getType() == GTPath.METHOD) {
+					return getResourceManager().createImage(img4);
+				}
+			}
+			
+			
 			return null;
 		}
 
@@ -263,11 +306,6 @@ public class TreeViewer {
 						result = String.valueOf(Metric.measureMaintain(method, projectName, packageName, className, methodName));
 					}
 					break;
-				case 6:
-					if(path.getType() == GTPath.PACKAGE) {
-						result = String.valueOf(Metric.mesureAbstractness(projectName, packageName));
-					}
-					break;
 				case 99: //For test
 					result = String.valueOf(viewer.getTree().getColumnCount());
 					break;
@@ -318,6 +356,20 @@ public class TreeViewer {
 			}
 			return isMatch;
 		}
+	}
+
+	public void updating()
+	{
+		IResourceChangeListener listener = new IResourceChangeListener() {
+			public void resourceChanged(IResourceChangeEvent event) {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						viewer.setInput(ProjectAnalyser.getProjectNames());
+					}
+				});
+			}
+		};
+		workSpace.addResourceChangeListener(listener);
 	}
 
 	class GTPath {
@@ -435,3 +487,4 @@ public class TreeViewer {
 	}
 
 }
+
