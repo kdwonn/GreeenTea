@@ -87,6 +87,7 @@ class cyclomaticVisitor extends ASTVisitor{
 	public String code = null;
 	public cyclomaticVisitor(String x) {
 		// TODO Auto-generated constructor stub
+		
 		code = x;
 	}
 	//Block that cyclomatic dosent have to care about : because cyclomatic is calculated at method level
