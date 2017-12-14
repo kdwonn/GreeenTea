@@ -77,9 +77,11 @@ public class Metric {
 	}
 
 
-	static public int measureDhama() {
+	static public double measureDhama(String projectName, String packageName, String className, String methodName) {
 		// to T_S04
-		return 0;
+		DhamaCoupling dhama = new DhamaCoupling(projectName, packageName, className, methodName);
+		double result = dhama.getResult();
+		return Math.round(result * 100d)/100d;
 	}
 
 	static public int measureMartinAfferent(String proj, String pckg) {
