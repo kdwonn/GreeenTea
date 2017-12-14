@@ -74,22 +74,16 @@ public class TreeViewer {
 		metric4Column.setLabelProvider(new MetricProvider(4));
 
 		TreeViewerColumn metric5Column = new TreeViewerColumn(viewer, SWT.NONE);
-		metric5Column.getColumn().setText("Dhama's Coupling Metric");
+		metric5Column.getColumn().setText("Maintainability Index");
 		metric5Column.getColumn().setWidth(150);
 		metric5Column.getColumn().setAlignment(SWT.RIGHT);
 		metric5Column.setLabelProvider(new MetricProvider(5));
-
+		
 		TreeViewerColumn metric6Column = new TreeViewerColumn(viewer, SWT.NONE);
-		metric6Column.getColumn().setText("Maintainability Index");
-		metric6Column.getColumn().setWidth(150);
+		metric6Column.getColumn().setText("Abstractness");
+		metric6Column.getColumn().setWidth(100);
 		metric6Column.getColumn().setAlignment(SWT.RIGHT);
 		metric6Column.setLabelProvider(new MetricProvider(6));
-		
-		TreeViewerColumn metric7Column = new TreeViewerColumn(viewer, SWT.NONE);
-		metric7Column.getColumn().setText("Abstractness");
-		metric7Column.getColumn().setWidth(100);
-		metric7Column.getColumn().setAlignment(SWT.RIGHT);
-		metric7Column.setLabelProvider(new MetricProvider(7));
 	}
 
 	public org.eclipse.jface.viewers.TreeViewer getViewer() {
@@ -313,17 +307,13 @@ public class TreeViewer {
 						result = String.valueOf(Metric.measureMartinInstability(projectName, packageName));
 					break;
 				case 5:
-					if(path.getType() == GTPath.METHOD)
-						result = String.valueOf(Metric.measureDhama(projectName, packageName, className, methodName));
-					break;
-				case 6:
 					if(path.getType() == GTPath.METHOD) {
 						IMethod method = ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);
 						result = String.valueOf(Metric.measureMaintain(method, projectName, packageName, className, methodName));
 					}
 					break;
 
-				case 7:
+				case 6:
 					if(path.getType() == GTPath.PACKAGE) {
 						result = String.valueOf(Metric.mesureAbstractness(projectName, packageName));
 					}
