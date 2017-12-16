@@ -34,24 +34,19 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
-
 public class TreeViewer {
 	@Inject
 	IWorkbench workbench;
 	private org.eclipse.jface.viewers.TreeViewer viewer;
 	private IWorkspace workSpace;
-
 	public TreeViewer(Composite parent) {
 		workSpace = ResourcesPlugin.getWorkspace();
 		
 		FilteredTree filteredTree = new FilteredTree(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FILL, new GTPatternFilter(), true);
 		viewer = filteredTree.getViewer();		
-
-		//viewer = new org.eclipse.jface.viewers.TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FILL);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.getTree().setHeaderVisible(true);
 		viewer.setInput(ProjectAnalyser.getProjectNames());
-
 
 		TreeViewerColumn mainColumn = new TreeViewerColumn(viewer, SWT.NONE);
 		mainColumn.getColumn().setText("Projects Structure");
@@ -98,9 +93,7 @@ public class TreeViewer {
 		metric7Column.getColumn().setText("Abstractness");
 		metric7Column.getColumn().setWidth(100);
 		metric7Column.getColumn().setAlignment(SWT.RIGHT);
-		metric7Column.setLabelProvider(new MetricProvider(7));
-		
-		
+		metric7Column.setLabelProvider(new MetricProvider(7));		
 	}
 
 	public org.eclipse.jface.viewers.TreeViewer getViewer() {
@@ -163,7 +156,6 @@ public class TreeViewer {
 			}
 			return null;
 		}
-
 		@Override
 		public Object getParent(Object element) {
 			if (element instanceof GTPath) {
@@ -171,7 +163,6 @@ public class TreeViewer {
 			}
 			return null;
 		}
-
 		@Override
 		public boolean hasChildren(Object element) {
 			if (element instanceof GTPath) {
@@ -193,8 +184,6 @@ public class TreeViewer {
 			return false;
 		}
 	}
-
-
 	//TODO
 	class ViewLabelProvider extends ColumnLabelProvider implements IStyledLabelProvider {
 		private ImageDescriptor img1;
@@ -203,7 +192,13 @@ public class TreeViewer {
 		private ImageDescriptor img4;
 		private ResourceManager resourceManager;
 
+		
+		
+		/**
+		 * Add the Image path
+		 **/
 		public ViewLabelProvider() {
+			
 			String path1, path2, path3, path4;
 			Bundle bundle = FrameworkUtil.getBundle(ViewLabelProvider.class);
 			path1 = "res/icons/project.png";
@@ -238,6 +233,11 @@ public class TreeViewer {
 			return name;
 		}
 
+		/**
+		 * get Icon Image
+		 * Check the element type and gives the image  
+		 *
+		 **/
 		@Override
 		public Image getImage(Object element) {
 			
@@ -255,12 +255,9 @@ public class TreeViewer {
 				else if(tmp.getType() == GTPath.METHOD) {
 					return getResourceManager().createImage(img4);
 				}
-			}
-			
-			
+			}		
 			return null;
 		}
-
 		@Override
 		public void dispose() {
 			// garbage collection system resources
@@ -269,7 +266,6 @@ public class TreeViewer {
 				resourceManager = null;
 			}
 		}
-
 		protected ResourceManager getResourceManager() {
 			if (resourceManager == null) {
 				resourceManager = new LocalResourceManager(JFaceResources.getResources());
@@ -282,7 +278,6 @@ public class TreeViewer {
 	class MetricProvider extends ColumnLabelProvider implements IStyledLabelProvider {
 		private ImageDescriptor directoryImage;
 		private ResourceManager resourceManager;
-
 		private final int index;
 
 		public MetricProvider(int index) {
@@ -298,8 +293,6 @@ public class TreeViewer {
 				packageName = path.getPackageName();
 				className = path.getClassName();
 				methodName = path.getMethodName();
-
-				//IMethod method = ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);
 
 				switch(index) {
 				case 1:
@@ -346,9 +339,7 @@ public class TreeViewer {
 					result = String.valueOf(viewer.getTree().getColumnCount());
 					break;
 				}				
-
 				return result;
-
 			}
 			return "";
 		}
@@ -393,7 +384,17 @@ public class TreeViewer {
 			return isMatch;
 		}
 	}
-
+	
+	/**
+	 * Real_time_updating
+	 * If Resources are changed for some reason (add the method)
+	 *   IResourceChngeListener catch this situation and recalulating the metric
+	 * 
+	 * @author  Kim dongwon and ParkNamgyu
+	 * @see 	greentea.GreenTea
+	 * @see 	greentea.ProjectAnalyser
+	 * @see 	org.eclipse.core.resources
+	 */
 	public void updating()
 	{
 		IResourceChangeListener listener = new IResourceChangeListener() {
@@ -407,6 +408,20 @@ public class TreeViewer {
 		};
 		workSpace.addResourceChangeListener(listener);
 	}
+	
+	/**
+	 * Double_click to display resource
+	 * If Resource is Project|Package|Class and Each of them has a child
+	 *   expand the node 
+	 * If Resource is Method, then view the Mehtod area
+	 * 
+	 * @author Park Namgyu and Woo junghwan
+	 * @see 	greentea.GreenTea
+	 * @see 	greentea.ProjectAnalyser
+	 * @see 	org.eclipse.core.resources
+	 * @param  event DoubleClickEvent
+	 * @throws JavaModelException
+	 */
 	public void click_area(DoubleClickEvent event)
 	{
 		IStructuredSelection selection = viewer.getStructuredSelection();
@@ -447,7 +462,6 @@ public class TreeViewer {
 						e.printStackTrace();
 					}
 		}
-		
 	}
 	
 	class GTPath {
@@ -565,4 +579,3 @@ public class TreeViewer {
 	}
 
 }
-

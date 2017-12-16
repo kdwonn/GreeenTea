@@ -45,18 +45,9 @@ import java.util.List;
 public class GreenTea {
 	private TreeViewer treeViewer;
 	private org.eclipse.jface.viewers.TreeViewer viewer;
-	//private Real_update updateViewer;
-	
 
-	/*
-	 * composite parent -> separate to some area and only left area used for treeviewrcol.
-	 * 	Will be moved to treeViewer
-	 */
 	@PostConstruct
 	public void createPartControl(Composite parent) {
-		//		Composite comp = new Composite(parent, SWT.NONE);
-		//		GridLayout gl = new GridLayout(2, false);
-		//        comp.setLayout(gl);
 		parent.setLayout(new GridLayout(2, false)); 
 		Button tutorialBtn = new Button(parent, SWT.PUSH);
 		tutorialBtn.setText("Tutorial");
@@ -69,22 +60,14 @@ public class GreenTea {
 		
 		treeViewer = new TreeViewer(parent);
 		viewer = treeViewer.getViewer();
-		treeViewer.updating();
-
-
-
+		treeViewer.updating();   // for real_time_updating  T_S15
 
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
             public void doubleClick(DoubleClickEvent event) {
-        		//org.eclipse.jface.viewers.TreeViewer viewer = (org.eclipse.jface.viewers.TreeViewer) event.getViewer();
-                //IStructuredSelection thisSelection = (IStructuredSelection) event.getSelection();
-                //Object selectedNode = thisSelection.getFirstElement();
-                //viewer.setExpandedState(selectedNode,!viewer.getExpandedState(selectedNode));
-				treeViewer.click_area(event);
+				treeViewer.click_area(event);  //for double_click_to_display_source T_S16
             }
         });
-	    
 	    
 	    tutorialBtn.addSelectionListener(new SelectionListener() {
 			@Override
@@ -105,9 +88,7 @@ public class GreenTea {
 			}
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
-	    	
 	    });
-	    
 	    reportBtn.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -120,27 +101,20 @@ public class GreenTea {
 				Bundle bundle = Platform.getBundle("GreenTea");
 				try {
 					File file = new File(reportName);
-
 					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 					IDE.openEditor(page, file.toURI(), "org.eclipse.mylyn.wikitext.ui.editor.markupEditor", true);
 				} catch ( PartInitException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}
-				
+				}	
 			}
-
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
-	    	
 	    });
-	    
 	}
-
 	@Focus
 	public void setFocus() {
 		viewer.getControl().setFocus();
-
 	}
 }
 
