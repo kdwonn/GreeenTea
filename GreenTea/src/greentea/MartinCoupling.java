@@ -17,11 +17,33 @@ import org.eclipse.jdt.core.search.SearchParticipant;
 import org.eclipse.jdt.core.search.SearchPattern;
 import org.eclipse.jdt.core.search.SearchRequestor;
 
+
+/**
+ * Calculate Martin Coupling metric and instability.
+ * 
+ * Object instantiate : 
+ * <pre>
+ * 		MartinCoupling mc = new MartinCoupling("Target project Name", "Target package Name");
+ * </pre>
+ * 
+ * @author Park Junsu and Kim Dongwon
+ * @version 1.0
+ * @see 	greentea.Metric
+ * @see 	greentea.ProjectAnalyser
+ * @see 	org.eclipse.jdt.core
+ *
+ */
 public class MartinCoupling {
 	private int afferentCoupling;
 	private int efferentCoupling;
 	private double instability;
 
+	/**
+	 * Constructor of MartinCoupling class.
+	 * 
+	 * @param proj	Project name of the target package 
+	 * @param pckg	Package name of the target package
+	 */
 	public MartinCoupling(String proj, String pckg) {
 		
 		IPackageFragment targetPackage = null;
@@ -43,6 +65,13 @@ public class MartinCoupling {
 		}
 	}
 	
+	/**
+	 * Add all packages on the target project on scope.
+	 * 
+	 * @param proj 		Project name of the target package
+	 * @param scope		List of packages to setting a search scope
+	 * @throws JavaModelException
+	 */
 	public static void addPackagetoScope(IJavaProject proj, List<IPackageFragment> scope) throws JavaModelException {
 		List<IPackageFragment> packages = Arrays.asList(proj.getPackageFragments());
 		for(IPackageFragment pack : packages) {
@@ -52,6 +81,13 @@ public class MartinCoupling {
 		}
 	}
 	
+	/**
+	 * Get a another packages of target package's project
+	 * 
+	 * @param pckg	Target package
+	 * @return	All packages of target package's project except target package
+	 * @throws JavaModelException
+	 */
 	public static List<IPackageFragment> getOuterPackages(IPackageFragment pckg) throws JavaModelException {
 		IJavaProject rootProject = (IJavaProject) pckg.getAncestor(IJavaElement.JAVA_PROJECT);
 		List<IPackageFragment> outerPackages = new ArrayList<IPackageFragment>();
@@ -110,38 +146,85 @@ public class MartinCoupling {
 		return result;
 	}
 
+	/**
+	 * Get the Afferent Coupling value of target package.
+	 * 
+	 * @return 	Afferent Coupling value
+	 */
 	public int getCa() {
 		return afferentCoupling;
 	}
-
+	
+	/**
+	 * Get the Efferent Coupling value of target package.
+	 * 
+	 * @return 	Efferent Coupling value
+	 */
 	public int getCe() {
 		return efferentCoupling;
 	}
-
+	
+	/**
+	 * Get the instability of target package
+	 * 
+	 * @return	Instability value
+	 */
 	public double getInstability() {
 		return instability;
 	}
 	
+	/**
+	 * SearchEngine requestor for calculating Afferent Coupling.  
+	 * 
+	 * Object instantiate : 
+	 * <pre>
+	 * 		AfferentRequestor request = new AfferentRequestor(targetPackage)
+	 * </pre>
+	 * 
+	 * @author Park Junsu and Kim Dongwon
+	 * @version 1.0
+	 * @see 	org.eclipse.jdt.core.search.SearchRequestor
+	 *
+	 */
 	public static class AfferentRequestor extends SearchRequestor {
 		private int result = 0;
 		private IJavaSearchScope target;
 		private Set<String> results = null;
 		private Set<String> packages = null;
 
+		/**
+		 * Constructor for AfferentRequestor.
+		 * 
+		 * @param targetPackage		Target package object for search
+		 */
 		public AfferentRequestor(IPackageFragment targetPackage) {
 			target = SearchEngine.createJavaSearchScope(new IJavaElement[] { targetPackage });
 		}
 
+		/**
+		 * Get the number of search results.
+		 * 
+		 * @return	Number of search results
+		 */
 		public int getResult() {
 			return result;
 		}
 
+		/**
+		 * Setting before search.
+		 */
 		@Override
 		public void beginReporting() {
 			results = new HashSet<String>();
 			packages = new HashSet<String>();
 		}
 
+		/**
+		 * If search matches, add on result.
+		 * 
+		 * @param match		Matched objects
+		 * @see 	org.eclipse.jdt.core.search
+		 */
 		public void acceptSearchMatch(SearchMatch match) throws CoreException {
 			IJavaElement enclosingElement = (IJavaElement) match.getElement();
 			if ((enclosingElement != null) && (!target.encloses(enclosingElement))) {
@@ -151,11 +234,27 @@ public class MartinCoupling {
 			}
 		}
 		
+		/**
+		 * Get a results.
+		 */
 		public void endReporting() {
 			result = results.size();
 		}
 	}
 	
+	/**
+	 * SearchEngine requestor for calculating Efferent Coupling.  
+	 * 
+	 * Object instantiate : 
+	 * <pre>
+	 * 		EfferentRequestor request = new EfferentRequestor()
+	 * </pre>
+	 * 
+	 * @author Park Junsu and Kim Dongwon
+	 * @version 1.0
+	 * @see 	org.eclipse.jdt.core.search.SearchRequestor
+	 *
+	 */
 	public static class EfferentRequestor extends SearchRequestor {
 		int result = 0;
 		Set<String> results = null;
@@ -164,10 +263,18 @@ public class MartinCoupling {
 		public EfferentRequestor() {
 		}
 
+		/**
+		 * Get the number of search results.
+		 * 
+		 * @return	Number of search results
+		 */
 		public int getResult() {
 			return result;
 		}
 
+		/**
+		 * Setting before search.
+		 */
 		@Override
 		public void beginReporting() {
 			results = new HashSet<String>();
@@ -191,6 +298,12 @@ public class MartinCoupling {
 			}
 		}
 
+		/**
+		 * If search matches, add on result.
+		 * 
+		 * @param match		Matched objects
+		 * @see 	org.eclipse.jdt.core.search
+		 */
 		@Override
 		public void acceptSearchMatch(SearchMatch match) throws CoreException {
 			int start = match.getOffset();
@@ -210,6 +323,9 @@ public class MartinCoupling {
 			}
 		}
 
+		/**
+		 * Get a results.
+		 */
 		@Override
 		public void endReporting() {
 			result = results.size();
