@@ -191,7 +191,7 @@ public class TreeViewer {
 		private ImageDescriptor img3;
 		private ImageDescriptor img4;
 		private ResourceManager resourceManager;
-
+		
 		
 		
 		/**
