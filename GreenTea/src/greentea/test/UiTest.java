@@ -57,6 +57,40 @@ public class UiTest {
 		bot.resetWorkbench();
 	}
 
+	/*
+	 * Test case for checking Highlighting in Green Tea
+	 */
+	@Test
+	public void highlightTest() {
+
+		SWTBotView view = bot.viewByTitle("Green Tea");
+		view.bot().tree().getTreeItem("GreenTea").expand();
+		view.bot().tree().getTreeItem("GreenTea").getNode("greentea").expand();
+		view.bot().tree().getTreeItem("GreenTea").getNode("greentea").getNode("GreenTea.java").expand();
+		view.bot().tree().getTreeItem("GreenTea").getNode("greentea").getNode("GreenTea.java").getNode("setFocus").doubleClick();
+		bot.sleep(500);
+		String result = bot.activeEditor().toTextEditor().getSelection();
+		String expected = "setFocus";
+		assertEquals(expected,result);
+		
+	}
+	
+	/*
+	 * Test case for checking expandedNode in Green Tea
+	 */
+	@Test
+	public void expnadNodeTest() {
+		SWTBotView view = bot.viewByTitle("Green Tea");
+		SWTBotTreeItem item = view.bot().tree().getTreeItem("GreenTea");
+		item.doubleClick();
+		assertTrue(item.isExpanded());
+		
+		SWTBotTreeItem item2 = view.bot().tree().getTreeItem("GreenTea");
+		item2.doubleClick();	
+		item2.doubleClick();
+		assertNotNull(item2.getNode("greentea"));
+		
+	}
 
 	/*
 	 * Test case for checking tutorial open button Tutorial open button is placed in
