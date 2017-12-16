@@ -44,6 +44,8 @@ public class UiTest {
       	Bundle bundle = Platform.getBundle("GreenTea");
 		String pluginPath = bundle.getLocation().replaceAll("reference:file:", "");
 		
+		pluginPath = pluginPath + "\\..\\testexample";
+		
 		bot.menu("File").menu("Open Projects from File System...").click();
 		bot.comboBox(0).setText(pluginPath);
 		if(bot.button("Finish").isEnabled())
@@ -51,7 +53,7 @@ public class UiTest {
 		else
 			bot.button("Cancel").click();
 		
-		mc = new MartinCoupling("GreenTea", "testexample.Bank");
+		mc = new MartinCoupling("testexample", "testexample.Bank");
 	}
 	
 	@AfterClass
