@@ -105,7 +105,7 @@ T_S16
 * Title: `Double Click to display source`
 * Priority: `2`
 * Units (Story Points): `5`
-* `If all the tree structure is all open at once, it may be too long to see in one screen - therefore, for a non-terminal object such as packages or projects, it would be better to enable expanding and collapsing to open and close any nonterminal nodes at will.`
+* `If all the tree structure is all open at once, it may be too long to see in one screen - therefore, for a non-terminal object such as packages or projects, it would be better to enable expanding and collapsing to open and close any nonterminal nodes at will. And when double click the method, it will connect to method body.`
 
 T_S17
 
