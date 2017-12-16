@@ -104,6 +104,16 @@ public class UiTest {
 	 * Test case for checking tutorial open button
 	 * Tutorial open button is placed in the toolbar of this plugin.
 	 */ 
+
+	@Test
+	public void expnadNodeTest() {
+		SWTBotView view = bot.viewByTitle("Green Tea");
+		SWTBotTreeItem item = view.bot().tree().getTreeItem("GreenTea");
+		item.doubleClick();
+		assertTrue(item.isExpanded());
+	}
+
+	
 	@Test 
 	public void testOpenTutorial() {
 		bot.button("Tutorial").click();
