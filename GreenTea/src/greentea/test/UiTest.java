@@ -25,8 +25,6 @@ import greentea.Metric;
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class UiTest {
 	private static SWTWorkbenchBot bot;
-	private	static MartinCoupling mc;
-	private static Abstractness abst;
 	
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -54,9 +52,6 @@ public class UiTest {
 			bot.button("Finish").click();
 		else
 			bot.button("Cancel").click();
-		
-		mc = new MartinCoupling("testexample", "testexample.Bank");
-		abst = new Abstractness("testexample", "testexample");
 	}
 	
 	@AfterClass
@@ -64,42 +59,7 @@ public class UiTest {
 		bot.sleep(2000);
 		bot.resetWorkbench();
 	}
-	@Test
-	public void AbstractTest() {
-		double estimatedValue = 0.14;
-		double epsilon=0.00001;
-		boolean isSame = Math.abs(estimatedValue - Double.valueOf(abst.getResult())) <epsilon;
-		assertEquals(true, isSame);
-	}
-	@Test
-	public void DhamaCouplingTest() {
-		double estimatedValue = 1/22;
-		//assertEquals(estimatedValue, Metric.measureDhama());
-	}
 	
-	@Test
-	public void MartinAfferentCouplingTest() {
-		double estimatedValue = 0;
-		double epsilon=0.00001;
-		boolean isSame=Math.abs(estimatedValue-mc.getCa())<epsilon;
-		assertEquals(true,isSame);
-	}
-	
-	@Test
-	public void MartinEfferentCouplingTest() {
-		double estimatedValue = 1;
-		double epsilon=0.00001;
-		boolean isSame=Math.abs(estimatedValue-mc.getCe())<epsilon;
-		assertEquals(true,isSame);
-	}
-	
-	@Test
-	public void MartinInstabilityTest() {
-		double estimatedValue = 1;
-		double epsilon=0.00001;
-		boolean isSame=Math.abs(estimatedValue-mc.getInstability())<epsilon;
-		assertEquals(true,isSame);
-	}
 	
 	/*
 	 * Test case for checking expandedNode in Green Tea
