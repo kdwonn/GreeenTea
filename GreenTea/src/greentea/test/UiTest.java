@@ -100,11 +100,10 @@ public class UiTest {
 		boolean isSame=Math.abs(estimatedValue-mc.getInstability())<epsilon;
 		assertEquals(true,isSame);
 	}
+	
 	/*
-	 * Test case for checking tutorial open button
-	 * Tutorial open button is placed in the toolbar of this plugin.
-	 */ 
-
+	 * Test case for checking expandedNode in Green Tea
+	 */
 	@Test
 	public void expnadNodeTest() {
 		SWTBotView view = bot.viewByTitle("Green Tea");
@@ -112,8 +111,11 @@ public class UiTest {
 		item.doubleClick();
 		assertTrue(item.isExpanded());
 	}
-
 	
+	/*
+	 * Test case for checking tutorial open button
+	 * Tutorial open button is placed in the toolbar of this plugin.
+	 */ 	
 	@Test 
 	public void testOpenTutorial() {
 		bot.button("Tutorial").click();
