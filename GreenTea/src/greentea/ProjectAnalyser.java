@@ -122,7 +122,7 @@ public class ProjectAnalyser {
 			}
 		}
 		if(objectProject == null) {
-			return null;		
+			return new IPackageFragment[0];		
 		}
 		
 		IPackageFragmentRoot[] packageRoots;
@@ -158,7 +158,7 @@ public class ProjectAnalyser {
 				}
 			}
 		}
-		return null;
+		return new ICompilationUnit[0];
 	}
 	
 	private static ICompilationUnit getCompilationUnit(String projectName, String packageName, String ClassName) {
