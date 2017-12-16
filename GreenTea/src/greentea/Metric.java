@@ -8,8 +8,6 @@ import java.util.List;
 import org.eclipse.jdt.core.*;
 import org.eclipse.swtbot.swt.finder.utils.StringUtils;
 
-import testexample.NegativeException;
-
 public class Metric {
 	public Metric() {
 
