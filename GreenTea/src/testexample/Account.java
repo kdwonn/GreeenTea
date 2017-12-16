@@ -46,7 +46,6 @@ public abstract class Account {
 	 */
 	public void deposit(double amount) {
 		balance += amount;
-		//음수인 경우 고려X
 	}
 	
 	/**
