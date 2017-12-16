@@ -8,7 +8,13 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.*;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.core.search.IJavaSearchScope;
 import org.eclipse.jdt.core.search.SearchEngine;
@@ -17,20 +23,20 @@ import org.eclipse.jdt.core.search.SearchParticipant;
 import org.eclipse.jdt.core.search.SearchPattern;
 import org.eclipse.jdt.core.search.SearchRequestor;
 
-
 /**
  * Calculate Martin Coupling metric and instability.
  * 
- * Object instantiate : 
+ * Object instantiate :
+ * 
  * <pre>
- * 		MartinCoupling mc = new MartinCoupling("Target project Name", "Target package Name");
+ * MartinCoupling mc = new MartinCoupling("Target project Name", "Target package Name");
  * </pre>
  * 
  * @author Park Junsu and Kim Dongwon
  * @version 1.0
- * @see 	greentea.Metric
- * @see 	greentea.ProjectAnalyser
- * @see 	org.eclipse.jdt.core
+ * @see greentea.Metric
+ * @see greentea.ProjectAnalyser
+ * @see org.eclipse.jdt.core
  *
  */
 public class MartinCoupling {
@@ -41,67 +47,71 @@ public class MartinCoupling {
 	/**
 	 * Constructor of MartinCoupling class.
 	 * 
-	 * @param proj	Project name of the target package 
-	 * @param pckg	Package name of the target package
+	 * @param proj
+	 *            Project name of the target package
+	 * @param pckg
+	 *            Package name of the target package
 	 */
 	public MartinCoupling(String proj, String pckg) {
-		
+
 		IPackageFragment targetPackage = null;
 		List<IPackageFragment> packages = Arrays.asList(ProjectAnalyser.getPackages(proj));
-		
-		for(IPackageFragment pack : packages) {
-			if(pack.getElementName().equals(pckg)) {
+
+		for (IPackageFragment pack : packages) {
+			if (pack.getElementName().equals(pckg)) {
 				targetPackage = pack;
 			}
 		}
-		
+
 		afferentCoupling = CalcAfferentCoupling(targetPackage);
 		efferentCoupling = CalcEfferentCoupling(targetPackage);
-		if(afferentCoupling + efferentCoupling == 0) {
+		if (afferentCoupling + efferentCoupling == 0) {
 			instability = 0;
-		}
-		else {
+		} else {
 			instability = efferentCoupling / (afferentCoupling + efferentCoupling);
 		}
 	}
-	
+
 	/**
 	 * Add all packages on the target project on scope.
 	 * 
-	 * @param proj 		Project name of the target package
-	 * @param scope		List of packages to setting a search scope
+	 * @param proj
+	 *            Project name of the target package
+	 * @param scope
+	 *            List of packages to setting a search scope
 	 * @throws JavaModelException
 	 */
 	public static void addPackagetoScope(IJavaProject proj, List<IPackageFragment> scope) throws JavaModelException {
 		List<IPackageFragment> packages = Arrays.asList(proj.getPackageFragments());
-		for(IPackageFragment pack : packages) {
-			if(pack.getKind() != IPackageFragmentRoot.K_BINARY) {
+		for (IPackageFragment pack : packages) {
+			if (pack.getKind() != IPackageFragmentRoot.K_BINARY) {
 				scope.add(pack);
 			}
 		}
 	}
-	
+
 	/**
 	 * Get a another packages of target package's project
 	 * 
-	 * @param pckg	Target package
-	 * @return	All packages of target package's project except target package
+	 * @param pckg
+	 *            Target package
+	 * @return All packages of target package's project except target package
 	 * @throws JavaModelException
 	 */
 	public static List<IPackageFragment> getOuterPackages(IPackageFragment pckg) throws JavaModelException {
 		IJavaProject rootProject = (IJavaProject) pckg.getAncestor(IJavaElement.JAVA_PROJECT);
 		List<IPackageFragment> outerPackages = new ArrayList<IPackageFragment>();
-		
+
 		addPackagetoScope(rootProject, outerPackages);
-		
+
 		IProject[] reference = rootProject.getProject().getReferencingProjects();
-		if((reference != null) && (reference.length > 0)) {
+		if ((reference != null) && (reference.length > 0)) {
 			for (IProject ref : reference) {
 				IJavaProject next = JavaCore.create(ref);
-				if(next != null) {
+				if (next != null) {
 					addPackagetoScope(next, outerPackages);
 				}
-				
+
 			}
 		}
 		outerPackages.remove(pckg);
@@ -110,10 +120,11 @@ public class MartinCoupling {
 
 	private int CalcAfferentCoupling(IPackageFragment targetPackage) {
 		int result = 0;
-		
+
 		try {
 			SearchEngine searchEngine = new SearchEngine();
-			IJavaSearchScope scope = SearchEngine.createJavaSearchScope(getOuterPackages(targetPackage).toArray(new IJavaElement[] {}));
+			IJavaSearchScope scope = SearchEngine
+					.createJavaSearchScope(getOuterPackages(targetPackage).toArray(new IJavaElement[] {}));
 			SearchPattern pattern = SearchPattern.createPattern(targetPackage, IJavaSearchConstants.REFERENCES);
 			AfferentRequestor requestor = new AfferentRequestor(targetPackage);
 			SearchParticipant[] participant = new SearchParticipant[] { SearchEngine.getDefaultSearchParticipant() };
@@ -123,7 +134,7 @@ public class MartinCoupling {
 			e.printStackTrace();
 			result = -1;
 		}
-		
+
 		return result;
 	}
 
@@ -132,8 +143,9 @@ public class MartinCoupling {
 
 		try {
 			SearchEngine searchEngine = new SearchEngine();
-			IJavaSearchScope scope = SearchEngine.createJavaSearchScope(new IJavaElement[] {targetPackage});
-			SearchPattern pattern = SearchPattern.createPattern("*", IJavaSearchConstants.PACKAGE, IJavaSearchConstants.REFERENCES, SearchPattern.R_PATTERN_MATCH);
+			IJavaSearchScope scope = SearchEngine.createJavaSearchScope(new IJavaElement[] { targetPackage });
+			SearchPattern pattern = SearchPattern.createPattern("*", IJavaSearchConstants.PACKAGE,
+					IJavaSearchConstants.REFERENCES, SearchPattern.R_PATTERN_MATCH);
 			EfferentRequestor requestor = new EfferentRequestor();
 			SearchParticipant[] participant = new SearchParticipant[] { SearchEngine.getDefaultSearchParticipant() };
 			searchEngine.search(pattern, participant, scope, requestor, null);
@@ -142,48 +154,49 @@ public class MartinCoupling {
 			e.printStackTrace();
 			result = -1;
 		}
-		
+
 		return result;
 	}
 
 	/**
 	 * Get the Afferent Coupling value of target package.
 	 * 
-	 * @return 	Afferent Coupling value
+	 * @return Afferent Coupling value
 	 */
 	public int getCa() {
 		return afferentCoupling;
 	}
-	
+
 	/**
 	 * Get the Efferent Coupling value of target package.
 	 * 
-	 * @return 	Efferent Coupling value
+	 * @return Efferent Coupling value
 	 */
 	public int getCe() {
 		return efferentCoupling;
 	}
-	
+
 	/**
 	 * Get the instability of target package
 	 * 
-	 * @return	Instability value
+	 * @return Instability value
 	 */
 	public double getInstability() {
 		return instability;
 	}
-	
+
 	/**
-	 * SearchEngine requestor for calculating Afferent Coupling.  
+	 * SearchEngine requestor for calculating Afferent Coupling.
 	 * 
-	 * Object instantiate : 
+	 * Object instantiate :
+	 * 
 	 * <pre>
 	 * 		AfferentRequestor request = new AfferentRequestor(targetPackage)
 	 * </pre>
 	 * 
 	 * @author Park Junsu and Kim Dongwon
 	 * @version 1.0
-	 * @see 	org.eclipse.jdt.core.search.SearchRequestor
+	 * @see org.eclipse.jdt.core.search.SearchRequestor
 	 *
 	 */
 	public static class AfferentRequestor extends SearchRequestor {
@@ -195,7 +208,8 @@ public class MartinCoupling {
 		/**
 		 * Constructor for AfferentRequestor.
 		 * 
-		 * @param targetPackage		Target package object for search
+		 * @param targetPackage
+		 *            Target package object for search
 		 */
 		public AfferentRequestor(IPackageFragment targetPackage) {
 			target = SearchEngine.createJavaSearchScope(new IJavaElement[] { targetPackage });
@@ -204,7 +218,7 @@ public class MartinCoupling {
 		/**
 		 * Get the number of search results.
 		 * 
-		 * @return	Number of search results
+		 * @return Number of search results
 		 */
 		public int getResult() {
 			return result;
@@ -222,8 +236,9 @@ public class MartinCoupling {
 		/**
 		 * If search matches, add on result.
 		 * 
-		 * @param match		Matched objects
-		 * @see 	org.eclipse.jdt.core.search
+		 * @param match
+		 *            Matched objects
+		 * @see org.eclipse.jdt.core.search
 		 */
 		public void acceptSearchMatch(SearchMatch match) throws CoreException {
 			IJavaElement enclosingElement = (IJavaElement) match.getElement();
@@ -233,7 +248,7 @@ public class MartinCoupling {
 				packages.add(pkg.getElementName());
 			}
 		}
-		
+
 		/**
 		 * Get a results.
 		 */
@@ -241,18 +256,19 @@ public class MartinCoupling {
 			result = results.size();
 		}
 	}
-	
+
 	/**
-	 * SearchEngine requestor for calculating Efferent Coupling.  
+	 * SearchEngine requestor for calculating Efferent Coupling.
 	 * 
-	 * Object instantiate : 
+	 * Object instantiate :
+	 * 
 	 * <pre>
 	 * 		EfferentRequestor request = new EfferentRequestor()
 	 * </pre>
 	 * 
 	 * @author Park Junsu and Kim Dongwon
 	 * @version 1.0
-	 * @see 	org.eclipse.jdt.core.search.SearchRequestor
+	 * @see org.eclipse.jdt.core.search.SearchRequestor
 	 *
 	 */
 	public static class EfferentRequestor extends SearchRequestor {
@@ -266,7 +282,7 @@ public class MartinCoupling {
 		/**
 		 * Get the number of search results.
 		 * 
-		 * @return	Number of search results
+		 * @return Number of search results
 		 */
 		public int getResult() {
 			return result;
@@ -301,24 +317,25 @@ public class MartinCoupling {
 		/**
 		 * If search matches, add on result.
 		 * 
-		 * @param match		Matched objects
-		 * @see 	org.eclipse.jdt.core.search
+		 * @param match
+		 *            Matched objects
+		 * @see org.eclipse.jdt.core.search
 		 */
 		@Override
 		public void acceptSearchMatch(SearchMatch match) throws CoreException {
 			int start = match.getOffset();
 			int end = start + match.getLength();
-			
+
 			if (match.getElement() != null) {
 				try {
 					String name = getPackageName((IJavaElement) match.getElement(), start, end);
-					
+
 					if (!name.startsWith("java")) {
 						results.add(match.getResource().getFullPath().toString());
 						packages.add(name);
 					}
 				} catch (StringIndexOutOfBoundsException x) {
-					
+
 				}
 			}
 		}

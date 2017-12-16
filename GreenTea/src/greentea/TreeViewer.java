@@ -21,8 +21,14 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.resource.ResourceManager;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -39,11 +45,13 @@ public class TreeViewer {
 	IWorkbench workbench;
 	private org.eclipse.jface.viewers.TreeViewer viewer;
 	private IWorkspace workSpace;
+
 	public TreeViewer(Composite parent) {
 		workSpace = ResourcesPlugin.getWorkspace();
-		
-		FilteredTree filteredTree = new FilteredTree(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FILL, new GTPatternFilter(), true);
-		viewer = filteredTree.getViewer();		
+
+		FilteredTree filteredTree = new FilteredTree(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FILL,
+				new GTPatternFilter(), true);
+		viewer = filteredTree.getViewer();
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.getTree().setHeaderVisible(true);
 		viewer.setInput(ProjectAnalyser.getProjectNames());
@@ -82,18 +90,18 @@ public class TreeViewer {
 		metric5Column.getColumn().setWidth(150);
 		metric5Column.getColumn().setAlignment(SWT.RIGHT);
 		metric5Column.setLabelProvider(new MetricProvider(5));
-		
+
 		TreeViewerColumn metric6Column = new TreeViewerColumn(viewer, SWT.NONE);
 		metric6Column.getColumn().setText("Dhama");
 		metric6Column.getColumn().setWidth(100);
 		metric6Column.getColumn().setAlignment(SWT.RIGHT);
 		metric6Column.setLabelProvider(new MetricProvider(6));
-		
+
 		TreeViewerColumn metric7Column = new TreeViewerColumn(viewer, SWT.NONE);
 		metric7Column.getColumn().setText("Abstractness");
 		metric7Column.getColumn().setWidth(100);
 		metric7Column.getColumn().setAlignment(SWT.RIGHT);
-		metric7Column.setLabelProvider(new MetricProvider(7));		
+		metric7Column.setLabelProvider(new MetricProvider(7));
 	}
 
 	public org.eclipse.jface.viewers.TreeViewer getViewer() {
@@ -111,44 +119,41 @@ public class TreeViewer {
 
 		@Override
 		public Object[] getElements(Object inputElement) {
-			if(inputElement instanceof String[]) {
-				String projectNames[] = (String[])inputElement;
+			if (inputElement instanceof String[]) {
+				String projectNames[] = (String[]) inputElement;
 				List<GTPath> list = new ArrayList<GTPath>();
-				for(String projectName : projectNames) {
+				for (String projectName : projectNames) {
 					list.add(new GTPath(projectName));
 				}
 				return list.toArray(new GTPath[0]);
-			}
-			else {
+			} else {
 				return null;
 			}
 		}
 
 		@Override
 		public Object[] getChildren(Object parentElement) {
-			if(parentElement instanceof GTPath) {
-				GTPath path = (GTPath)parentElement;
+			if (parentElement instanceof GTPath) {
+				GTPath path = (GTPath) parentElement;
 				List<GTPath> list = new ArrayList<GTPath>();
-				if(path.getType() == GTPath.PROJECT) {
+				if (path.getType() == GTPath.PROJECT) {
 					String projectName = path.getProjectName();
-					for(String packageName : ProjectAnalyser.getPackageNames(projectName)) {
+					for (String packageName : ProjectAnalyser.getPackageNames(projectName)) {
 						list.add(new GTPath(path, packageName));
 					}
 					return list.toArray(new GTPath[0]);
-				}
-				else if (path.getType() == GTPath.PACKAGE) {
+				} else if (path.getType() == GTPath.PACKAGE) {
 					String projectName = path.getProjectName();
 					String packageName = path.getPackageName();
-					for(String className : ProjectAnalyser.getClassNames(projectName, packageName)) {
+					for (String className : ProjectAnalyser.getClassNames(projectName, packageName)) {
 						list.add(new GTPath(path, className));
 					}
 					return list.toArray(new GTPath[0]);
-				}
-				else if (path.getType() == GTPath.CLASS) {
+				} else if (path.getType() == GTPath.CLASS) {
 					String projectName = path.getProjectName();
 					String packageName = path.getPackageName();
 					String className = path.getClassName();
-					for(String methodName : ProjectAnalyser.getMethodNames(projectName, packageName, className)) {
+					for (String methodName : ProjectAnalyser.getMethodNames(projectName, packageName, className)) {
 						list.add(new GTPath(path, methodName));
 					}
 					return list.toArray(new GTPath[0]);
@@ -156,6 +161,7 @@ public class TreeViewer {
 			}
 			return null;
 		}
+
 		@Override
 		public Object getParent(Object element) {
 			if (element instanceof GTPath) {
@@ -163,20 +169,23 @@ public class TreeViewer {
 			}
 			return null;
 		}
+
 		@Override
 		public boolean hasChildren(Object element) {
 			if (element instanceof GTPath) {
-				GTPath path = (GTPath)element;
-				if(path.getType() == GTPath.PROJECT) {
-					if(ProjectAnalyser.getPackageNames(path.getProjectName()).length > 0) return true;
+				GTPath path = (GTPath) element;
+				if (path.getType() == GTPath.PROJECT) {
+					if (ProjectAnalyser.getPackageNames(path.getProjectName()).length > 0)
+						return true;
 					return false;
-				}
-				else if (path.getType() == GTPath.PACKAGE) {
-					if(ProjectAnalyser.getClassNames(path.getProjectName(), path.getPackageName()).length > 0)return true;
+				} else if (path.getType() == GTPath.PACKAGE) {
+					if (ProjectAnalyser.getClassNames(path.getProjectName(), path.getPackageName()).length > 0)
+						return true;
 					return false;
-				}
-				else if (path.getType() == GTPath.CLASS) {
-					if(ProjectAnalyser.getMethodNames(path.getProjectName(), path.getPackageName(), path.getClassName()).length > 0)return true;
+				} else if (path.getType() == GTPath.CLASS) {
+					if (ProjectAnalyser.getMethodNames(path.getProjectName(), path.getPackageName(),
+							path.getClassName()).length > 0)
+						return true;
 					return false;
 				}
 				return false;
@@ -184,28 +193,27 @@ public class TreeViewer {
 			return false;
 		}
 	}
-	//TODO
+
+	// TODO
 	class ViewLabelProvider extends ColumnLabelProvider implements IStyledLabelProvider {
 		private ImageDescriptor img1;
 		private ImageDescriptor img2;
 		private ImageDescriptor img3;
 		private ImageDescriptor img4;
 		private ResourceManager resourceManager;
-		
-		
-		
+
 		/**
 		 * Add the Image path
 		 **/
 		public ViewLabelProvider() {
-			
+
 			String path1, path2, path3, path4;
 			Bundle bundle = FrameworkUtil.getBundle(ViewLabelProvider.class);
 			path1 = "res/icons/project.png";
 			path2 = "res/icons/project.png";
 			path3 = "res/icons/Red.png";
 			path4 = "res/icons/green.png";
-			
+
 			URL url = FileLocator.find(bundle, new Path(path1), null);
 			img1 = ImageDescriptor.createFromURL(url);
 			url = FileLocator.find(bundle, new Path(path2), null);
@@ -225,8 +233,8 @@ public class TreeViewer {
 		public String getText(Object element) {
 			String name = "";
 
-			if(element instanceof GTPath) {
-				GTPath path = (GTPath)element;
+			if (element instanceof GTPath) {
+				GTPath path = (GTPath) element;
 				name = path.toString();
 			}
 
@@ -234,30 +242,27 @@ public class TreeViewer {
 		}
 
 		/**
-		 * get Icon Image
-		 * Check the element type and gives the image  
+		 * get Icon Image Check the element type and gives the image
 		 *
 		 **/
 		@Override
 		public Image getImage(Object element) {
-			
-			if(element instanceof GTPath) {
-				GTPath tmp = (GTPath)element;
-				if(tmp.getType() == GTPath.PROJECT) {
+
+			if (element instanceof GTPath) {
+				GTPath tmp = (GTPath) element;
+				if (tmp.getType() == GTPath.PROJECT) {
 					return getResourceManager().createImage(img1);
-				}
-				else if(tmp.getType() == GTPath.PACKAGE) {
+				} else if (tmp.getType() == GTPath.PACKAGE) {
 					return getResourceManager().createImage(img2);
-				}
-				else if(tmp.getType() == GTPath.CLASS) {
+				} else if (tmp.getType() == GTPath.CLASS) {
 					return getResourceManager().createImage(img3);
-				}
-				else if(tmp.getType() == GTPath.METHOD) {
+				} else if (tmp.getType() == GTPath.METHOD) {
 					return getResourceManager().createImage(img4);
 				}
-			}		
+			}
 			return null;
 		}
+
 		@Override
 		public void dispose() {
 			// garbage collection system resources
@@ -266,6 +271,7 @@ public class TreeViewer {
 				resourceManager = null;
 			}
 		}
+
 		protected ResourceManager getResourceManager() {
 			if (resourceManager == null) {
 				resourceManager = new LocalResourceManager(JFaceResources.getResources());
@@ -274,7 +280,7 @@ public class TreeViewer {
 		}
 	}
 
-	//TODO
+	// TODO
 	class MetricProvider extends ColumnLabelProvider implements IStyledLabelProvider {
 		private ImageDescriptor directoryImage;
 		private ResourceManager resourceManager;
@@ -286,7 +292,7 @@ public class TreeViewer {
 
 		@Override
 		public String getText(Object element) {
-			if(element instanceof GTPath) {
+			if (element instanceof GTPath) {
 				GTPath path = (GTPath) element;
 				String projectName, packageName, className, methodName, result = null;
 				projectName = path.getProjectName();
@@ -294,56 +300,58 @@ public class TreeViewer {
 				className = path.getClassName();
 				methodName = path.getMethodName();
 
-				switch(index) {
+				switch (index) {
 				case 1:
-					if(path.getType() == GTPath.METHOD) {
+					if (path.getType() == GTPath.METHOD) {
 						IMethod method = ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);
 						result = String.valueOf(Metric.measureLOC(method));
-					}
-					else if(path.getType() == GTPath.CLASS) {
+					} else if (path.getType() == GTPath.CLASS) {
 						result = String.valueOf(Metric.measureLOC(projectName, packageName, className));
 					}
 					break;
 				case 2:
-					if(path.getType() == GTPath.METHOD)
-						result = String.valueOf(Metric.measureHalstead(projectName, packageName, className, methodName));
+					if (path.getType() == GTPath.METHOD)
+						result = String
+								.valueOf(Metric.measureHalstead(projectName, packageName, className, methodName));
 					break;
 				case 3:
-					if(path.getType() == GTPath.METHOD)
-						result = String.valueOf(Metric.measureCyclomatic(projectName, packageName, className, methodName));
+					if (path.getType() == GTPath.METHOD)
+						result = String
+								.valueOf(Metric.measureCyclomatic(projectName, packageName, className, methodName));
 					break;
 				case 4:
-					if(path.getType() == GTPath.PACKAGE)
+					if (path.getType() == GTPath.PACKAGE)
 						result = String.valueOf(Metric.measureMartinInstability(projectName, packageName));
 					break;
 				case 5:
-					if(path.getType() == GTPath.METHOD) {
+					if (path.getType() == GTPath.METHOD) {
 						IMethod method = ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);
-						result = String.valueOf(Metric.measureMaintain(method, projectName, packageName, className, methodName));
+						result = String.valueOf(
+								Metric.measureMaintain(method, projectName, packageName, className, methodName));
 					}
 					break;
 
 				case 6:
-					if(path.getType() == GTPath.METHOD) {
+					if (path.getType() == GTPath.METHOD) {
 						result = String.valueOf(Metric.measureDhama(projectName, packageName, className, methodName));
 					}
 					break;
-					
+
 				case 7:
-					if(path.getType() == GTPath.PACKAGE) {
+					if (path.getType() == GTPath.PACKAGE) {
 						result = String.valueOf(Metric.mesureAbstractness(projectName, packageName));
 					}
 					break;
-				
-				case 99: //For test
+
+				case 99: // For test
 					result = String.valueOf(viewer.getTree().getColumnCount());
 					break;
-				}				
+				}
 				return result;
 			}
 			return "";
 		}
-		
+
 		@Override
 		public StyledString getStyledText(Object element) {
 			return new StyledString(getText(element));
@@ -373,30 +381,28 @@ public class TreeViewer {
 
 	class GTPatternFilter extends PatternFilter {
 		protected boolean isLeafMatch(final Viewer viewer, final Object element) {
-			org.eclipse.jface.viewers.TreeViewer treeViewer = (org.eclipse.jface.viewers.TreeViewer)viewer;
+			org.eclipse.jface.viewers.TreeViewer treeViewer = (org.eclipse.jface.viewers.TreeViewer) viewer;
 			int numberOfColumns = treeViewer.getTree().getColumnCount();
 			boolean isMatch = false;
 			for (int columnIndex = 0; columnIndex < numberOfColumns; columnIndex++) {
-				ColumnLabelProvider labelProvider = (ColumnLabelProvider)treeViewer.getLabelProvider(columnIndex);
+				ColumnLabelProvider labelProvider = (ColumnLabelProvider) treeViewer.getLabelProvider(columnIndex);
 				String labelText = labelProvider.getText(element);
 				isMatch |= wordMatches(labelText);
 			}
 			return isMatch;
 		}
 	}
-	
+
 	/**
-	 * Real_time_updating
-	 * If Resources are changed for some reason (add the method)
-	 *   IResourceChngeListener catch this situation and recalulating the metric
+	 * Real_time_updating If Resources are changed for some reason (add the method)
+	 * IResourceChngeListener catch this situation and recalulating the metric
 	 * 
-	 * @author  Kim dongwon and ParkNamgyu
-	 * @see 	greentea.GreenTea
-	 * @see 	greentea.ProjectAnalyser
-	 * @see 	org.eclipse.core.resources
+	 * @author Kim dongwon and ParkNamgyu
+	 * @see greentea.GreenTea
+	 * @see greentea.ProjectAnalyser
+	 * @see org.eclipse.core.resources
 	 */
-	public void updating()
-	{
+	public void updating() {
 		IResourceChangeListener listener = new IResourceChangeListener() {
 			public void resourceChanged(IResourceChangeEvent event) {
 				Display.getDefault().asyncExec(new Runnable() {
@@ -408,62 +414,58 @@ public class TreeViewer {
 		};
 		workSpace.addResourceChangeListener(listener);
 	}
-	
+
 	/**
-	 * Double_click to display resource
-	 * If Resource is Project|Package|Class and Each of them has a child
-	 *   expand the node 
-	 * If Resource is Method, then view the Mehtod area
+	 * Double_click to display resource If Resource is Project|Package|Class and
+	 * Each of them has a child expand the node If Resource is Method, then view the
+	 * Mehtod area
 	 * 
 	 * @author Park Namgyu and Woo junghwan
-	 * @see 	greentea.GreenTea
-	 * @see 	greentea.ProjectAnalyser
-	 * @see 	org.eclipse.core.resources
-	 * @param  event DoubleClickEvent
+	 * @see greentea.GreenTea
+	 * @see greentea.ProjectAnalyser
+	 * @see org.eclipse.core.resources
+	 * @param event
+	 *            DoubleClickEvent
 	 * @throws JavaModelException
 	 */
-	public void click_area(DoubleClickEvent event)
-	{
+	public void click_area(DoubleClickEvent event) {
 		IStructuredSelection selection = viewer.getStructuredSelection();
 		Object obj = selection.getFirstElement();
-		
-		if(obj ==null)
+
+		if (obj == null)
 			return;
-		if(obj instanceof GTPath)
-		{
+		if (obj instanceof GTPath) {
 			GTPath tmp = (GTPath) obj;
 			String projectName, packageName, className, methodName;
 			projectName = tmp.projectName;
 			packageName = tmp.packageName;
 			className = tmp.className;
 			methodName = tmp.methodName;
-			
-			if(tmp.getType() == GTPath.PROJECT ||
-					tmp.getType() == GTPath.PACKAGE ||
-						tmp.getType() == GTPath.CLASS)
-			{
-				if(viewer.getExpandedState(obj)) {
+
+			if (tmp.getType() == GTPath.PROJECT || tmp.getType() == GTPath.PACKAGE || tmp.getType() == GTPath.CLASS) {
+				if (viewer.getExpandedState(obj)) {
 					viewer.collapseToLevel(obj, 1);
-				}else
+				} else
 					viewer.expandToLevel(obj, 1);
-			}else
+			} else
 				try {
-					ISourceRange sourceRange =null;
-					if(tmp.getType() == GTPath.METHOD) {
-						IMethod method = ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);  
+					ISourceRange sourceRange = null;
+					if (tmp.getType() == GTPath.METHOD) {
+						IMethod method = ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);
 						sourceRange = method.getSourceRange();
 					}
-					IJavaElement area = (IJavaElement)ProjectAnalyser.getIMethod(projectName, packageName, className, methodName);
+					IJavaElement area = (IJavaElement) ProjectAnalyser.getIMethod(projectName, packageName, className,
+							methodName);
 					JavaUI.openInEditor(area);
-					ITextEditor editor = (ITextEditor) workbench.getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-					editor.selectAndReveal(sourceRange.getOffset() , sourceRange.getLength());
-				}catch (Exception e)
-					{
-						e.printStackTrace();
-					}
+					ITextEditor editor = (ITextEditor) workbench.getActiveWorkbenchWindow().getActivePage()
+							.getActiveEditor();
+					editor.selectAndReveal(sourceRange.getOffset(), sourceRange.getLength());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 		}
 	}
-	
+
 	class GTPath {
 		static final int PROJECT = 1;
 		static final int PACKAGE = 2;
@@ -505,25 +507,22 @@ public class TreeViewer {
 
 		public GTPath(GTPath oldPath, String str) {
 			int type = oldPath.getType();
-			if(type < 4 && type > 0) {
+			if (type < 4 && type > 0) {
 				this.type = type + 1;
 				this.projectName = oldPath.getProjectName();
-				if(type > 1) {
+				if (type > 1) {
 					this.packageName = oldPath.getPackageName();
-				}
-				else {
+				} else {
 					this.packageName = str;
 				}
-				if(type > 2) {
+				if (type > 2) {
 					this.className = oldPath.getClassName();
 					this.methodName = str;
-				}
-				else {
+				} else {
 					this.className = str;
 				}
 
-			}
-			else {
+			} else {
 				this.type = 0;
 			}
 		}
@@ -531,11 +530,9 @@ public class TreeViewer {
 		public GTPath getParent() {
 			if (type == PACKAGE) {
 				return new GTPath(projectName);
-			}
-			else if (type == CLASS) {
+			} else if (type == CLASS) {
 				return new GTPath(projectName, packageName);
-			}
-			else if (type == METHOD) {
+			} else if (type == METHOD) {
 				return new GTPath(projectName, packageName, className);
 			}
 			return null;
@@ -558,16 +555,13 @@ public class TreeViewer {
 		}
 
 		public String toString() {
-			if(type == PROJECT) {
+			if (type == PROJECT) {
 				return projectName;
-			}
-			else if(type == PACKAGE) {
+			} else if (type == PACKAGE) {
 				return packageName;
-			}
-			else if(type == CLASS) {
+			} else if (type == CLASS) {
 				return className;
-			}
-			else if(type == METHOD) {
+			} else if (type == METHOD) {
 				return methodName;
 			}
 			return "";

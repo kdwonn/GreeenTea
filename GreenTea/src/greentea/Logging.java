@@ -16,11 +16,11 @@ public class Logging {
 		String time = new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(date);
 		report.replaceAll("Metric Report", time);
 		try {
-			File file = new File("log-" + time + ".md") ;
+			File file = new File("log-" + time + ".md");
 			FileWriter fw = new FileWriter(file, true);
-	        fw.write(report);
-	        fw.flush();
-	        fw.close();
+			fw.write(report);
+			fw.flush();
+			fw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

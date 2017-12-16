@@ -7,40 +7,24 @@ import java.net.URL;
 
 import javax.annotation.PostConstruct;
 
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
-import org.eclipse.jface.resource.ResourceManager;
-import org.eclipse.jface.viewers.*;
-import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GreenTea {
 	private TreeViewer treeViewer;
@@ -48,7 +32,7 @@ public class GreenTea {
 
 	@PostConstruct
 	public void createPartControl(Composite parent) {
-		parent.setLayout(new GridLayout(2, false)); 
+		parent.setLayout(new GridLayout(2, false));
 		Button tutorialBtn = new Button(parent, SWT.PUSH);
 		tutorialBtn.setText("Tutorial");
 
@@ -57,19 +41,19 @@ public class GreenTea {
 
 		GridData grid = new GridData();
 		grid.horizontalSpan = 2;
-		
+
 		treeViewer = new TreeViewer(parent);
 		viewer = treeViewer.getViewer();
-		treeViewer.updating();   // for real_time_updating  T_S15
+		treeViewer.updating(); // for real_time_updating T_S15
 
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
-            public void doubleClick(DoubleClickEvent event) {
-				treeViewer.click_area(event);  //for double_click_to_display_source T_S16
-            }
-        });
-	    
-	    tutorialBtn.addSelectionListener(new SelectionListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				treeViewer.click_area(event); // for double_click_to_display_source T_S16
+			}
+		});
+
+		tutorialBtn.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
@@ -86,10 +70,12 @@ public class GreenTea {
 					e1.printStackTrace();
 				}
 			}
+
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-	    });
-	    reportBtn.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		reportBtn.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -97,23 +83,25 @@ public class GreenTea {
 				String reportName = "metric_report.md";
 				greentea.ReportGenerator.generateReport(reportName);
 				greentea.Logging.writeLog();
-				
+
 				try {
 					File file = new File(reportName);
 					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 					IDE.openEditor(page, file.toURI(), "org.eclipse.mylyn.wikitext.ui.editor.markupEditor", true);
-				} catch ( PartInitException e1) {
+				} catch (PartInitException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}	
+				}
 			}
+
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-	    });
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
 	}
+
 	@Focus
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
 }
-

@@ -1,6 +1,6 @@
 package greentea.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -19,58 +19,57 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.osgi.framework.Bundle;
 
-import greentea.*;
-
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class ReportTest {
 
 	private static SWTWorkbenchBot bot;
-	
+
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		bot = new SWTWorkbenchBot();
 		try {
-		bot.viewByTitle("Welcome").close();
-		}catch(WidgetNotFoundException e) {}
-		
+			bot.viewByTitle("Welcome").close();
+		} catch (WidgetNotFoundException e) {
+		}
+
 		bot.menu("Window").menu("Show View", "Other...").click();
 		SWTBotShell showView = bot.shell("Show View");
-        showView.activate();
-        SWTBotTree tree = bot.tree();
-        SWTBotTreeItem node = tree.expandNode("Green Tea");
-        node.select("Green Tea");
-      	bot.button("Open").click();
-      	
-      	Bundle bundle = Platform.getBundle("GreenTea");
+		showView.activate();
+		SWTBotTree tree = bot.tree();
+		SWTBotTreeItem node = tree.expandNode("Green Tea");
+		node.select("Green Tea");
+		bot.button("Open").click();
+
+		Bundle bundle = Platform.getBundle("GreenTea");
 		String pluginPath = bundle.getLocation().replaceAll("reference:file:", "");
-		
+
 		bot.menu("File").menu("Open Projects from File System...").click();
 		bot.comboBox(0).setText(pluginPath);
-		if(bot.button("Finish").isEnabled())
+		if (bot.button("Finish").isEnabled())
 			bot.button("Finish").click();
 		else
 			bot.button("Cancel").click();
 	}
-	
+
 	@AfterClass
 	public static void afterClass() {
 		bot.sleep(2000);
 		bot.resetWorkbench();
 	}
-	
+
 	@Test
 	public void testReportGenerated() {
 		String filename = "metricReport.md";
 		File file = new File(filename);
-		
-		if(file.exists()) {
+
+		if (file.exists()) {
 			org.junit.Assume.assumeTrue(file.delete());
 		}
 		greentea.ReportGenerator.generateReport(filename);
-		
+
 		assertTrue(file.exists());
 	}
-	
+
 	@Test
 	public void testLog() {
 		Date date = new Date();
@@ -81,4 +80,3 @@ public class ReportTest {
 		assertTrue(file.exists());
 	}
 }
-
