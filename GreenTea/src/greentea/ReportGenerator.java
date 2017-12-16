@@ -10,7 +10,7 @@ import net.steppschuh.markdowngenerator.table.Table;
 import net.steppschuh.markdowngenerator.text.heading.Heading;
 
 public class ReportGenerator {
-	public static String generateMarkdownString() {
+	static String generateMarkdownString() {
 		StringBuilder sb = new StringBuilder().append("Metric Report").append("\n").append("====================").append("\n");
 		
 		String table = "| Name | Lines of Code | Halstead Volume | Cyclomatec Complexity | Martin's Coupling | Dhama's Coupling | Maintainablity Index | Abstractness |\n";
@@ -40,6 +40,10 @@ public class ReportGenerator {
 		return sb.toString();
 	}
 	
+	/**
+	 * generate report with specific filename. 
+	 * @param filename as String
+	 */
 	public static void generateReport(String filename) {
 		try {
 			File file = new File(filename) ;

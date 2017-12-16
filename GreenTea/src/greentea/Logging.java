@@ -7,6 +7,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Logging {
+	/**
+	 * generate log with filename consist of current time.
+	 */
 	public static void writeLog() {
 		String report = ReportGenerator.generateMarkdownString();
 		Date date = new Date();

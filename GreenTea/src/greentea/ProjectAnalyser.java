@@ -63,6 +63,13 @@ public class ProjectAnalyser {
 		return nameList.toArray(new String[] {});
 	}
 	
+	/**
+	 * return names of method in specific project, package, class
+	 * @param projectName as String
+	 * @param packageName as String
+	 * @param className as String
+	 * @return String[]
+	 */
 	public static String[] getMethodNames(String projectName, String packageName, String ClassName) {
 		ICompilationUnit compilationUnit = getCompilationUnit(projectName, packageName, ClassName);
 		if(compilationUnit == null) return new String[0];
@@ -99,7 +106,10 @@ public class ProjectAnalyser {
 		}
 	}
 	
-	
+	/**
+	 * return array of JavaProject contained in current workspace
+	 * @return IJavaProject[]
+	 */
 	public static IJavaProject[] getProjects() {
 		IProject[] projects =  ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		List<IJavaProject> projectList = new LinkedList<IJavaProject>();
@@ -112,6 +122,11 @@ public class ProjectAnalyser {
 		return projectList.toArray(new IJavaProject[] {});
 	}
 	
+	/**
+	 * return array of IPackageFragment in specific project
+	 * @param projectName as String
+	 * @return IPackageFragment[]
+	 */
 	public static IPackageFragment[] getPackages(String projectName) {
 		IJavaProject[] projects = getProjects();
 		IJavaProject objectProject = null;
@@ -171,7 +186,15 @@ public class ProjectAnalyser {
 		return null;
 	}
 	
-	static IMethod getIMethod(String projectName, String packageName, String className, String methodName) {
+	/**
+	 * return IMethod with specific projectname, packagename, classname, and methodname
+	 * @param projectName as String
+	 * @param packageName as String
+	 * @param className as String
+	 * @param methodName as String
+	 * @return IMethod
+	 */
+	public static IMethod getIMethod(String projectName, String packageName, String className, String methodName) {
 		IMethod method = null;
         ICompilationUnit compilationUnit = ProjectAnalyser.getCompilationUnit(projectName, packageName, className);
 		try {
