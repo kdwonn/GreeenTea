@@ -19,6 +19,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 
+import greentea.Metric;
+import greentea.ProjectAnalyser;
+
 public class AnalyserTest {
 	private static SWTWorkbenchBot bot;
 	
@@ -64,23 +67,22 @@ public class AnalyserTest {
 	
 	@Test
 	public void getClassTest() {
-		String[] projectNames = greentea.ProjectAnalyser.getProjectNames();
-		org.junit.Assume.assumeFalse(projectNames.length == 0);
-		String[] packageNames = greentea.ProjectAnalyser.getPackageNames(projectNames[0]);
-		org.junit.Assume.assumeFalse(packageNames.length == 0);
-		String[] classNames = greentea.ProjectAnalyser.getClassNames(projectNames[0], packageNames[0]);
-		org.junit.Assume.assumeFalse(classNames.length == 0);
-		
-		IJavaProject[] projects = greentea.ProjectAnalyser.getProjects();
-		try {
-			for (IPackageFragment frag : projects[0].getPackageFragments()) {
-				if(frag.getElementName().equals(packageNames[0])) {
-					assertNotNull(frag.getCompilationUnit(classNames[0]));
+		for(String projectName:ProjectAnalyser.getProjectNames())
+			for(String packageName:ProjectAnalyser.getPackageNames(projectName))
+				for(String className:ProjectAnalyser.getClassNames(projectName, packageName)) {
+					IJavaProject[] projects = greentea.ProjectAnalyser.getProjects();
+					try {
+						for (IPackageFragment frag : projects[0].getPackageFragments()) {
+							if(frag.getElementName().equals(packageName)) {
+								assertNotNull(frag.getCompilationUnit(className));
+							}
+						}
+					} catch (JavaModelException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
-			}
-		} catch (JavaModelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+		
 	}
 }
