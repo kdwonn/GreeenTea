@@ -9,16 +9,19 @@ import java.util.Date;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
+import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.osgi.framework.Bundle;
 
 import greentea.*;
 
+@RunWith(SWTBotJunit4ClassRunner.class)
 public class ReportTest {
 
 	private static SWTWorkbenchBot bot;

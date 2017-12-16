@@ -1,6 +1,7 @@
 package greentea.test;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.osgi.framework.Bundle;
 
 import static org.junit.Assert.*;
@@ -8,6 +9,7 @@ import static org.junit.Assert.*;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
+import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
@@ -18,6 +20,7 @@ import greentea.Abstractness;
 import greentea.MartinCoupling;
 import greentea.Metric;
 
+@RunWith(SWTBotJunit4ClassRunner.class)
 public class MetricTest {
 	private static SWTWorkbenchBot bot;
 	private	static MartinCoupling mc;
