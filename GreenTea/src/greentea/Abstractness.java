@@ -1,18 +1,26 @@
 package greentea;
 
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import java.lang.reflect.Modifier;
-import java.util.StringTokenizer;
 
 
+/**
+ * Calculate Martin Abstractness.
+ * 
+ * Object instantiate : 
+ * <pre>
+ * 		Abstractness abst = new Abstractness("Target project Name", "Target package Name");
+ * </pre>
+ * 
+ * @author Byun Han Seoup and Nam goong sung gon.
+ * @version 1.0
+ * @see 	greentea.Metric
+ * @see 	org.eclipse.jdt.core
+ *
+ */
 public class Abstractness {
 	ICompilationUnit[] classes;
 
@@ -43,6 +51,11 @@ public class Abstractness {
 		}
 	}
 	
+	/**
+	 * Get the result of Abstractness.
+	 * 
+	 * @return	value of Abstractness.
+	 */
 	public String getResult() {
 		this.countClass();
 		if(totalClassNum==0)
@@ -52,6 +65,9 @@ public class Abstractness {
 		return String.valueOf(result);
 	}	
 	
+	/**
+	 * Copy the code form ProjectAnalyser, cause it defined as private method.
+	 */
 	private static ICompilationUnit[] getCompilationUnits(String projectName, String packageName) {
 		IPackageFragment[] packages = ProjectAnalyser.getPackages(projectName);
 		for(IPackageFragment pack : packages) {
