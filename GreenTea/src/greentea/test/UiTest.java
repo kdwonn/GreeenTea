@@ -1,6 +1,7 @@
 package greentea.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.core.runtime.Platform;
@@ -56,16 +57,6 @@ public class UiTest {
 		bot.resetWorkbench();
 	}
 
-	/*
-	 * Test case for checking expandedNode in Green Tea
-	 */
-	@Test
-	public void expnadNodeTest() {
-		SWTBotView view = bot.viewByTitle("Green Tea");
-		SWTBotTreeItem item = view.bot().tree().getTreeItem("GreenTea");
-		item.doubleClick();
-		assertTrue(item.isExpanded());
-	}
 
 	/*
 	 * Test case for checking tutorial open button Tutorial open button is placed in
