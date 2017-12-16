@@ -7,6 +7,7 @@ import java.io.File;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
+import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
@@ -28,7 +29,9 @@ public class UiTest {
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		bot = new SWTWorkbenchBot();
+		try {
 		bot.viewByTitle("Welcome").close();
+		}catch(WidgetNotFoundException e) {}
 		
 		bot.menu("Window").menu("Show View", "Other...").click();
 		SWTBotShell showView = bot.shell("Show View");
@@ -43,7 +46,10 @@ public class UiTest {
 		
 		bot.menu("File").menu("Open Projects from File System...").click();
 		bot.comboBox(0).setText(pluginPath);
-		bot.button("Finish").click();
+		if(bot.button("Finish").isEnabled())
+			bot.button("Finish").click();
+		else
+			bot.button("Cancel").click();
 		
 		mc = new MartinCoupling("GreenTea", "testexample.Bank");
 	}
@@ -102,35 +108,10 @@ public class UiTest {
 	 */
 	@Test
 	public void testMakeTextReport() {
-		bot.menu("Window").menu("Show View").menu("Other...").click();
-		bot.tree().expandNode("Green Tea").getNode("Green Tea").select();
-		bot.button("Open").click();
+		bot.button("Report").click();
 		
-		SWTBotView view = bot.viewByTitle("Green Tea");
-		assertEquals("Make Text report", view.getToolbarButtons().get(1).getToolTipText());
-		view.getToolbarButtons().get(1).click();
-		view.bot().toolbarButton().click();
+		assertEquals("metric_report.md", bot.activeEditor().getTitle());
 		
-		File report = new File("text_report.md");
-		assertTrue(report.exists());
-	}
-	
-	/*
-	 * Test case for checking logging metrics function
-	 * Log button is placed in the toolbar of this plugin.
-	 */
-	@Test
-	public void testMakeLog() {
-		bot.menu("Window").menu("Show View").menu("Other...").click();
-		bot.tree().expandNode("Green Tea").getNode("Green Tea").select();
-		bot.button("Open").click();
-		
-		SWTBotView view = bot.viewByTitle("Green Tea");
-		assertEquals("Make Log file", view.getToolbarButtons().get(2).getToolTipText());
-		view.getToolbarButtons().get(2).click();
-		view.bot().toolbarButton().click();
-		
-		File report = new File("metric_log.txt");
-		assertTrue(report.exists());
+		bot.activeEditor().close();
 	}
 }

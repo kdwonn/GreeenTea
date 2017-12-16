@@ -98,7 +98,6 @@ public class GreenTea {
 				greentea.ReportGenerator.generateReport(reportName);
 				greentea.Logging.writeLog();
 				
-				Bundle bundle = Platform.getBundle("GreenTea");
 				try {
 					File file = new File(reportName);
 					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();

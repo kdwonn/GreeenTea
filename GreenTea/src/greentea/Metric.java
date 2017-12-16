@@ -14,20 +14,37 @@ public class Metric {
 	public Metric() {
 
 	}
+	
+	/**
+	 * calculate lines of code from sourcecode in string
+	 * @param code as String
+	 * @return lines of code as int
+	 */
 	static public int measureLOC(String code) {
 		// T_S01
 		int count = code.length() - code.replace("\n", "").length();
 		return count + 1;
 	}
+	/**
+	 * calculate lines of code for class(.java file) from specific location
+	 * @param projectName as String
+	 * @param packageName as String
+	 * @param className as String
+	 * @return lines of code as int
+	 */
 	static public int measureLOC(String projectName, String packageName, String className) {
 		// T_S01
 		String code = ProjectAnalyser.getSourceCode(projectName, packageName, className);
 		int count = code.length() - code.replace("\n", "").length();
 		return count + 1;
 	}
-	
+
+	/**
+	 * calculate lines of code for method from IMethod
+	 * @param method as IMethod
+	 * @return lines of code as int
+	 */
 	static public int measureLOC(IMethod method) {
-		// T_S01
 		String code;
 		try {
 			code = method.getSource();
