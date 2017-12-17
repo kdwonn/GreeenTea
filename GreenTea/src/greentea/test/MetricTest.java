@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.osgi.framework.Bundle;
 
 import greentea.Abstractness;
+import greentea.DhamaCoupling;
 import greentea.MartinCoupling;
 import greentea.Metric;
 
@@ -24,6 +25,7 @@ public class MetricTest {
 	private static SWTWorkbenchBot bot;
 	private static MartinCoupling mc;
 	private static Abstractness abst;
+	private static DhamaCoupling dhama;
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -55,6 +57,7 @@ public class MetricTest {
 
 		mc = new MartinCoupling("testexample", "testexample.Bank");
 		abst = new Abstractness("testexample", "testexample");
+		dhama = new DhamaCoupling("testexample", "testexample.Bank", "Bank", "findAccount");
 	}
 
 	@AfterClass
@@ -134,8 +137,8 @@ public class MetricTest {
 
 	@Test
 	public void DhamaCouplingTest() {
-		double estimatedValue = 1 / 22;
-		// assertEquals(estimatedValue, Metric.measureDhama());
+		double estimatedValue = 1 / 2;
+		assertEquals(true, estimatedValue - Double.valueOf(dhama.getResult()) < 0.000001);
 	}
 
 	@Test

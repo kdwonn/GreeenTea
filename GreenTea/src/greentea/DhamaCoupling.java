@@ -28,6 +28,19 @@ import org.eclipse.jdt.core.search.SearchRequestor;
 import greentea.MartinCoupling.AfferentRequestor;
 import greentea.MartinCoupling.EfferentRequestor;
 
+
+/**
+ * Class that calculates DhamaCoupling of given method .</br></br>
+ * 
+ * Object instantiate :
+ * <pre>
+ * MartinCoupling mc = new DhamaCoupling("Target project Name", "Target package Name", "Target class name, "Target method name");
+ * </pre>
+ * 
+ * @author Dongwon Kim and Park Junsu
+ * @version 1.0
+ * 
+ */
 public class DhamaCoupling {
 	DhamaVisitor treeVisitor;
 	MethodDeclaration methodRepresent;
@@ -40,11 +53,14 @@ public class DhamaCoupling {
 	int ce;
 	int ca;
 	int publicUsed;
-
-	public DhamaCoupling(String code, String methodName) {
-
-	}
-
+	
+	/**
+	 * Constructor of Dhama coupling class
+	 * @param projectName Target project name
+	 * @param packageName Target method name
+	 * @param className	Target class name
+	 * @param methodName Target method name
+	 */
 	public DhamaCoupling(String projectName, String packageName, String className, String methodName) {
 		IPackageFragment currentPackage = null;
 		List<IPackageFragment> packages = Arrays.asList(ProjectAnalyser.getPackages(projectName));
@@ -80,6 +96,9 @@ public class DhamaCoupling {
 		ca = CalcAfferentCoupling(iMethodRepresent, currentPackage);
 	}
 
+	/**
+	 * @return Value of Dhama coupling
+	 */
 	public double getResult() {
 		treeVisitor = new DhamaVisitor();
 		methodRepresent.accept(treeVisitor);
@@ -157,49 +176,88 @@ public class DhamaCoupling {
 	}
 }
 
+/**
+ * SearchRequestor for finding public field.
+ * @author Dongwon Kim and Junsu Park
+ *
+ */
 class PublicFieldRequestor extends SearchRequestor {
 	private int result = 0;
 	private Set<String> results = null;
 
+	/**
+	 * Default constructor of public requestor.
+	 */
 	public PublicFieldRequestor() {
 	}
 
+	/**
+	 * @return Number of public field found in search.
+	 */
 	public int getResult() {
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.search.SearchRequestor#beginReporting()
+	 */
 	@Override
 	public void beginReporting() {
 		results = new HashSet<String>();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.search.SearchRequestor#acceptSearchMatch(org.eclipse.jdt.core.search.SearchMatch)
+	 */
 	public void acceptSearchMatch(SearchMatch match) throws CoreException {
 		IJavaElement enclosingElement = (IJavaElement) match.getElement();
 		results.add(enclosingElement.getElementName());
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.search.SearchRequestor#endReporting()
+	 */
 	public void endReporting() {
 		result = results.size();
 	}
 }
 
+/**
+ * Find all methods in class
+ * @author Dongwon Kim and Junsu Park
+ *
+ */
 class DhamaMethodVisitor extends ASTVisitor {
 	List<MethodDeclaration> methodList = new ArrayList<MethodDeclaration>();
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.MethodDeclaration)
+	 */
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		methodList.add(node);
 		return super.visit(node);
 	}
 
+	/**
+	 * @return Get list of methods
+	 */
 	public List<MethodDeclaration> getMethods() {
 		return methodList;
 	}
 }
 
+/**
+ * Get number of public fields declared
+ * @author Dongwon Kim and Junsu Park
+ *
+ */
 class DhamaVisitor extends ASTVisitor {
 	List<FieldDeclaration> fieldList = new ArrayList<FieldDeclaration>();
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.FieldDeclaration)
+	 */
 	@Override
 	public boolean visit(FieldDeclaration node) {
 		if (node.getModifiers() == Modifier.PUBLIC)
@@ -207,6 +265,9 @@ class DhamaVisitor extends ASTVisitor {
 		return super.visit(node);
 	}
 
+	/**
+	 * @return Get list of fields
+	 */
 	public List<FieldDeclaration> getFields() {
 		return fieldList;
 	}
